@@ -1,0 +1,19 @@
+{{- if .Values.user.analyticsEnabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: middlemanager
+  labels:
+    name: middlemanager
+    service: middlemanager
+spec:
+  clusterIP: None
+  ports:
+  - name: "8091"
+    port: 8091
+    targetPort:  8091
+  selector:
+    name: middlemanager
+  sessionAffinity: ClientIP
+{{- end -}}

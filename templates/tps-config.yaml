@@ -1,0 +1,32 @@
+apiVersion: v1
+data:
+  APIM_GATEWAY_HOSTNAME: {{ include "tssg-public-host" . | quote }}
+  APIM_GATEWAY_PORT: "9443"
+  APIM_GATEWAY_TENANTID:  {{ include "default-tenant-id" . | quote }}
+  APIM_PORTAL_SUBDOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain }}
+  BUSINESS_REPORTS_ENABLED: "false"
+  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  DATABASE_NAME: {{ include "tps-db-name" . | quote }}
+  DATABASE_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  DATABASE_USERNAME: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
+  GATEWAY_PASSWORD: M2NlY2RhZTMyZDZkNWMyZGI3
+  GATEWAY_USERNAME: admin
+  JAVA_OPTS: -Xms512m -Xmx512m
+  NSS_SDB_USE_CACHE: "no"
+  OTK_PORT: "9443"
+  PAPI_USERNAME: {{ .Values.user.papiUsername | quote }}
+  PORTAL_VERSION: {{ .Chart.AppVersion }}
+  PORTAL_DATABASE_NAME: {{ include "portal-db-name" . | quote }}
+  RABBITMQ_PASS: {{ .Values.rabbitmq.config.password | quote }}
+  RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
+  RABBITMQ_USER: {{ .Values.rabbitmq.config.username | quote }}
+  TPS_SSL_CERT: {{ include "tps-crt" . | b64enc | quote }}
+  TPS_SSL_KEY: {{ include "tps-key" . | b64enc | quote }}
+  TPS_SSL_KEY_PASS: {{ required "Please fill in tpsKeyPass in values.yaml" .Values.secrets.tpsKeyPass | quote }}
+kind: ConfigMap
+metadata:
+  labels:
+    name: tenant_provisioner
+  name: tenant-provisioner-config

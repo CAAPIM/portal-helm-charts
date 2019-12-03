@@ -1,0 +1,15 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+data:
+  SERVICE_NAME: middleManager
+  ZOOKEEPER_HOST: zookeeper
+  ZOOKEEPER_PORT: "2181"
+  MINIO_URL: http://minio:9000
+  MINIO_ACCESS_KEY: minio
+  MINIO_SECRET_KEY: minio123
+kind: ConfigMap
+metadata:
+  labels:
+    name: middlemanager
+  name: middlemanager-config
+{{- end -}}

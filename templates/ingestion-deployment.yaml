@@ -1,0 +1,59 @@
+{{- if .Values.user.analyticsEnabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingestion-server
+  labels:
+    name: ingestion-server
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.ingestion.replicaCount }}
+  selector:
+    matchLabels:
+      name: ingestion-server
+  template:
+    metadata:
+      labels:
+        name: ingestion-server
+    spec:
+      containers:
+        - name: ingestion-server
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.ingestion }}"
+          imagePullPolicy: "{{ .Values.ingestion.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: ingestion-server-config
+          readinessProbe:
+            exec:
+              command: [sh, /opt/app/diagnostic/health_check.sh]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: [sh, /opt/app/diagnostic/health_check.sh]
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          resources:
+            requests:
+              memory: 512Mi
+            limits:
+              memory: 1.5Gi
+          ports:
+            - containerPort: 9042
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.ingestion.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+{{- end -}}

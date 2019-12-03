@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apim
+  labels:
+    name: apim
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.apim.replicaCount }}
+  selector:
+    matchLabels:
+      name: apim
+  template:
+    metadata:
+      labels:
+        name: apim
+    spec:
+      serviceAccountName:  portal-service-account
+      initContainers:
+        - name: liquidbase-upgrade-portal
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'db-upgrade']
+        - name: liquidbase-upgrade-rbac
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'rbac-upgrade']
+      containers:
+        - name: apim
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.apim }}"
+          imagePullPolicy: {{ .Values.apim.image.pullPolicy | quote }}
+          envFrom:
+          - configMapRef:
+              name: apim-config
+          readinessProbe:
+            httpGet:
+              path: /sys/probe/readinesscheck
+              port: 8080
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: [sh, /opt/docker/diagnostic/health_check.sh]
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          ports:
+            - containerPort: 8080
+            - containerPort: 8081
+            - containerPort: 8443
+            - containerPort: 9443
+            - containerPort: 9449
+            - containerPort: 1885
+            - containerPort: 9448
+          resources:
+            requests:
+              cpu: 100m
+              memory: 4096Mi
+            limits:
+              cpu: 2000m
+              memory: 8192Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.apim.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

@@ -1,0 +1,19 @@
+{{- if .Values.user.analyticsEnabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: historical
+  labels:
+    name: historical
+    service: historical
+spec:
+  clusterIP: None
+  ports:
+  - name: "8083"
+    port: 8083
+    targetPort: 8083
+  selector:
+    name: historical
+  sessionAffinity: ClientIP
+{{- end -}}

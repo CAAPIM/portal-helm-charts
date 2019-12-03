@@ -1,0 +1,76 @@
+{{- if .Values.user.setupDemoDatabase -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portaldb
+  labels:
+    name: portaldb
+spec:
+  replicas: {{ .Values.portaldb.replicaCount }}
+  selector:
+    matchLabels:
+      name: portaldb
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: portaldb
+    spec:
+      {{- if eq .Values.user.databaseType "postgresql" }}
+      containers:
+        - name: portaldb
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.postgres }}"
+          imagePullPolicy: "{{ .Values.portaldb.image.pullPolicy }}"
+          ports:
+            - containerPort: {{ include "database-port" . }}
+              name: portaldb
+          envFrom:
+          - configMapRef:
+              name: portaldb-config
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/docker-healthcheck
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+      {{- end }}
+      {{- if eq .Values.user.databaseType "mysql" }}
+      containers:
+        - name: portaldb
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.mysql }}"
+          imagePullPolicy: "{{ .Values.portaldb.image.pullPolicy }}"
+          ports:
+            - containerPort: {{ include "database-port" . }}
+              name: portaldb
+          envFrom:
+            - configMapRef:
+                name: portaldb-config
+          readinessProbe:
+            exec:
+              command:
+                - /opt/healthcheck.sh
+            timeoutSeconds: 3
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+      {{- end }}
+            requests:
+              cpu: 100m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.portaldb.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+{{- end -}}

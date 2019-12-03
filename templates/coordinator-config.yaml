@@ -1,0 +1,21 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+data:
+  SERVICE_NAME: coordinator
+  ZOOKEEPER_HOST: zookeeper
+  ZOOKEEPER_PORT: "2181" 
+  MINIO_URL: http://minio:9000
+  MINIO_ACCESS_KEY: minio
+  MINIO_SECRET_KEY: minio123
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_USERNAME: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
+  DATABASE_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  DRUID_DATABASE_NAME: {{ include "druid-db-name" . | quote }}
+kind: ConfigMap
+metadata:
+  labels:
+    name: coordinator
+  name: coordinator-config
+{{- end -}}

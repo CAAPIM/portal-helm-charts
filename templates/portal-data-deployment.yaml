@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portal-data
+  labels:
+    name: portal-data
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.portalData.replicaCount }}
+  selector:
+    matchLabels:
+      name: portal-data
+  template:
+    metadata:
+      labels:
+        name: portal-data
+    spec:
+      serviceAccountName:  portal-service-account
+      initContainers:
+        - name: liquidbase-upgrade-portal
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'db-upgrade']
+        - name: liquidbase-upgrade-rbac
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'rbac-upgrade']
+      containers:
+        - name: portal-data
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.data }}"
+          imagePullPolicy: "{{ .Values.portalData.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: portal-data-config
+          - secretRef:
+              name: portal-data-secret
+              optional: true
+          readinessProbe:
+            exec:
+              command:
+                - livenesscheck
+            initialDelaySeconds: 360
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command:
+                - livenesscheck
+            initialDelaySeconds: 360
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1500Mi
+            limits:
+              cpu: 1000m
+              memory: 3072Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.portalData.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

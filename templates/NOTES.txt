@@ -1,0 +1,24 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get {{ .Release.Name }}
+
+After the all pods are successfully running you can access the portal at:
+{{ printf "%s.%s" .Values.user.defaultTenantId .Values.user.domain }}
+
+If this domain is not in your DNS records please add the a record in your
+hosts file to point this domain to any of your kubernetes worker nodes.
+
+{{- if .Values.user.setupDemoDatabase }}
+
+Since you have decided to use the demo database, please remember that your portal
+data will not be saved. For a production deployment please deploy an external MYSQL database.
+
+{{- end }}
+
+For documentation about the portal, please visit:
+{{ include "portal.help.page" . }}

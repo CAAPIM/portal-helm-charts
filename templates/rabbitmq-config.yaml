@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+data:
+  CLUSTER: "true"
+  COOKIE: {{ required "Please provide the rabbitmq.config.cookie in values.yaml" .Values.rabbitmq.config.cookie | quote }}
+  HOST: {{ required "Please provide the rabbitmq.config.port in values.yaml" .Values.rabbitmq.config.host | quote }}
+  NSS_SDB_USE_CACHE: "no"
+  PASSWORD: {{ required "Please provide the rabbitmq.config.password in values.yaml" .Values.rabbitmq.config.password | quote }}
+  PORT: {{ required "Please provide the rabbitmq.config.port in values.yaml" .Values.rabbitmq.config.port | quote }}
+  PORTAL_VERSION: {{ .Chart.AppVersion }}
+  RABBITMQ_DEFAULT_PASS: {{ required "Please provide the rmq_default_password in values.yaml" .Values.rabbitmq.config.rmq_default_password | quote }}
+  RABBITMQ_DEFAULT_USER: {{ required "Please provide the rmq_default_user in values.yaml" .Values.rabbitmq.config.rmq_default_user | quote }}
+  RABBITMQ_ERLANG_COOKIE: {{ required "Please provide the rmq_erlang_cookie in values.yaml" .Values.rabbitmq.config.rmq_erlang_cookie | quote }}
+  USERNAME: {{ required "Please provide the rabbitmq.config.username in values.yaml" .Values.rabbitmq.config.username | quote }}
+metadata:
+  labels:
+    name: rabbitmq
+  name: rabbitmq-config

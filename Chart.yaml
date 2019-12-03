@@ -1,0 +1,9 @@
+apiVersion: v1
+appVersion: "4.4.0"
+description: CA API Developer Portal
+name: portal
+version: 1.0.0
+maintainers:
+  - name: Platform Engineering
+engine: gotpl
+tillerVersion: ">=2.8.0"

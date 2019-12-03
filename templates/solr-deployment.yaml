@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solr
+  labels:
+    name: solr
+spec:
+  selector:
+    matchLabels:
+      name: solr
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.solr.replicaCount }}
+  template:
+    metadata:
+      labels:
+        name: solr
+    spec:
+      containers:
+        - name: solr
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.solr }}"
+          imagePullPolicy: "{{ .Values.solr.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: solr-config
+          ports:
+            - containerPort: 8983
+              name: solr
+          readinessProbe:
+            httpGet:
+              path: /solr
+              port: 8983
+            initialDelaySeconds: 10
+            timeoutSeconds: 1
+          livenessProbe:
+            exec:
+              command:
+                - livenesscheck
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 50m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 750Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.solr.dnsPolicy }}"
+      restartPolicy: Always

@@ -1,0 +1,51 @@
+{{- if .Values.user.setupInternalSMTP -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smtp
+  labels:
+    name: smtp
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.smtp.replicaCount }}
+  selector:
+    matchLabels:
+      name: smtp
+  template:
+    metadata:
+      labels:
+        name: smtp
+    spec:
+      containers:
+        - name: smtp
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.smtp }}"
+          imagePullPolicy: "{{ .Values.smtp.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: smtp-config
+          readinessProbe:
+            exec:
+              command: ["nc", "-z", "localhost", "25"]
+            initialDelaySeconds: 60
+            timeoutSeconds: 3
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["nc", "-z", "localhost", "25"]
+            initialDelaySeconds: 180
+            timeoutSeconds: 3
+            periodSeconds: 15
+            successThreshold: 1
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.smtp.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+{{- end -}}

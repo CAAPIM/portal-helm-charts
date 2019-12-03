@@ -1,0 +1,19 @@
+{{- if .Values.user.analyticsEnabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: ingestion-server
+    service: ingestion-server
+  name: ingestion-server
+spec:
+  ports:
+    - port: 9042
+      targetPort: 9042
+      name: ingestion-server
+  selector:
+    name: ingestion-server
+  type: ClusterIP
+  sessionAffinity: ClientIP
+{{- end -}}

@@ -1,0 +1,17 @@
+{{- if .Values.user.setupInternalSMTP -}}
+apiVersion: v1
+kind: ConfigMap
+data:
+  NSS_SDB_USE_CACHE: "no"
+  POSTFIX_CERT: {{ include "smtp-internal-crt" . | b64enc | quote }}
+  POSTFIX_CONFIG_DOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain | quote }}
+  POSTFIX_CONFIG_HOSTNAME: "smtp"
+  POSTFIX_KEY: {{ include "smtp-internal-key" . | b64enc | quote }}
+  POSTFIX_PEM: {{ include "smtp-internal-pem" . | b64enc | quote }}
+  POSTFIX_USER: {{ required "Please fill in smtpUsername in values.yaml" .Values.user.smtpUsername }}
+  POSTFIX_USER_PASSWORD: {{ required "Please fill in smtpPassword in values.yaml" .Values.user.smtpPassword }}
+metadata:
+  labels:
+    name: smtp
+  name: smtp-config
+{{- end -}}

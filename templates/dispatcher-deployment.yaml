@@ -1,0 +1,57 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dispatcher
+  labels:
+    name: dispatcher
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.dispatcher.replicaCount }}
+  selector:
+    matchLabels:
+      name: dispatcher
+  template:
+    metadata:
+      labels:
+        name: dispatcher
+    spec:
+      containers:
+        - name: dispatcher
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.dispatcher }}"
+          imagePullPolicy: "{{ .Values.dispatcher.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: dispatcher-config
+          readinessProbe:
+            exec:
+              command: ["sh", "/usr/bin/healthcheck"]
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["sh", "/usr/bin/healthcheck"]
+            initialDelaySeconds: 300
+            timeoutSeconds: 5
+            periodSeconds: 15
+            successThreshold: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 250Mi
+            limits:
+              cpu: 500m
+              memory: 1024Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.dispatcher.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

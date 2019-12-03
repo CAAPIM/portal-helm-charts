@@ -1,0 +1,23 @@
+{{- if .Values.user.setupDemoDatabase -}}
+apiVersion: v1
+kind: ConfigMap
+data:
+  {{- if eq .Values.user.databaseType "postgresql" }}
+  NSS_SDB_USE_CACHE: "no"
+  POSTGRES_DATABASES: "{{ include "ldds-db-name" . }},{{ include "portal-db-name" . }},{{ include "tps-db-name" . }},{{ include "rbac-db-name" . }},{{ include "otk-db-name" . }},{{ include "druid-db-name" . }},integration_core,integration_runscope"
+  POSTGRES_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  POSTGRES_REPLICATION_MODE: master
+  POSTGRES_REPLICATION_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  POSTGRES_REPLICATION_USER: repl
+  POSTGRES_USER: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
+  {{- end }}
+  {{- if eq .Values.user.databaseType "mysql" }}
+  MYSQL_ROOT_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  MYSQL_USER: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
+  MYSQL_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+  {{- end }}
+metadata:
+  labels:
+    name: portaldb
+  name: portaldb-config
+{{- end -}}

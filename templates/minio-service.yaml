@@ -1,0 +1,19 @@
+{{- if .Values.user.analyticsEnabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  labels:
+    name: minio
+    service: minio
+spec:
+  clusterIP: None
+  ports:
+  - name: "9000"
+    port: 9000
+    targetPort: 9000
+  selector:
+    name: minio
+  sessionAffinity: ClientIP
+{{- end }}

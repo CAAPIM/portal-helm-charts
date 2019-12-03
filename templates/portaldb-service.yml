@@ -1,0 +1,18 @@
+{{- if .Values.user.setupDemoDatabase -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: portaldb
+    service: portaldb
+  name: portaldb
+spec:
+  ports:
+    - port: {{ include "database-port" . }}
+      targetPort: {{ include "database-port" . }}
+      name: portaldb-service
+  selector:
+    name: portaldb
+  type: ClusterIP
+  sessionAffinity: ClientIP
+{{- end -}}
