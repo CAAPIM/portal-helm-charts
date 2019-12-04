@@ -48,10 +48,12 @@ This helm chart deploys APIM Portal to a Kubernetes platform.
 10. Add all API Portal routes to your DNS service. If the domain is not public, you will need to add all routes in the /etc/hosts file of any systems that need to talk to the API Portal
 11. Verify that the API Portal can be accessed via ```https://<DEFAULT_TENANT_ID>-<NAMESPACE>.<PORTAL_DOMAIN>``` (i.e. https://apim-portal.example.com)
 12. (Optional) Contact Broadcom/CA Support if you do not currently have login credentials to apim-portal.packages.ca.com
-13. Update ```templates/docker-secret.yaml```
+13. Update ```templates/docker-secret.yaml``` with login credentials to apim-portal.packages.ca.com
+    
+    Linux/Mac CLI commands from top-level directory of this repository:
 
-        export AUTH_STRING=$(echo "<USERNAME>:<PASSWORD>" | base64)
-        export DOCKERCONFIGJSON=$(echo "{\"auths\":{\"apim-portal.packages.ca.com\":{\"auth\":\"$AUTH_STRING\"}}}" | base64 -w 0)
+        export AUTH_STRING=$(echo -n "<USERNAME>:<PASSWORD>" | base64)
+        export DOCKERCONFIGJSON=$(echo -n "{\"auths\":{\"apim-portal.packages.ca.com\":{\"auth\":\"$AUTH_STRING\"}}}" | base64 -w 0)
         echo "  .dockerconfigjson: $DOCKERCONFIGJSON" >> templates/docker-secret.yaml
 
     The docker-secrets.yaml file should look like below:
