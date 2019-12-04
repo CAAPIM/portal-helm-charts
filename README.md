@@ -6,6 +6,24 @@ This helm chart deploys APIM Portal to a Kubernetes platform.
 ### Prerequisites - Client
 1. [Kubectl installed](https://kubernetes.io/docs/tasks/tools/install-kubectl/) 
 2. [Helm installed](https://helm.sh/docs/intro/install/)
+3. (Optional) Contact Broadcom/CA Support if you do not currently have login credentials to apim-portal.packages.ca.com
+4. Update ```templates/docker-secret.yaml``` with login credentials to apim-portal.packages.ca.com
+    
+   Linux/Mac CLI commands from top-level directory of this repository:
+
+       export AUTH_STRING=$(echo -n "<USERNAME>:<PASSWORD>" | base64)
+       export DOCKERCONFIGJSON=$(echo -n "{\"auths\":{\"apim-portal.packages.ca.com\":{\"auth\":\"$AUTH_STRING\"}}}" | base64 -w 0)
+       echo "  .dockerconfigjson: $DOCKERCONFIGJSON" >> templates/docker-secret.yaml
+
+   The docker-secrets.yaml file should look like below:
+    
+       apiVersion: v1
+       kind: Secret
+       metadata:
+         name: bintray
+       type: kubernetes.io/dockerconfigjson
+       data:
+         .dockerconfigjson: <Long base64 string with credentials>
 
 ### Prerequisites - Platform
 1. One of the following Kubernetes platform readily available (with tiller version >=2.8.0)
@@ -14,7 +32,7 @@ This helm chart deploys APIM Portal to a Kubernetes platform.
     
     - Google Kubernetes Engine 
 2. The platform has minimum of 32G memory available
-4. If firewall enabled, portal required ports open on the cluster nodes: 8443, 9443
+3. If firewall enabled, portal required ports open on the cluster nodes: 8443, 9443
 
 ### Prerequisites - For Production
 1. External tenant domain ingress certs
@@ -47,24 +65,6 @@ This helm chart deploys APIM Portal to a Kubernetes platform.
                 
 10. Add all API Portal routes to your DNS service. If the domain is not public, you will need to add all routes in the /etc/hosts file of any systems that need to talk to the API Portal
 11. Verify that the API Portal can be accessed via ```https://<DEFAULT_TENANT_ID>-<NAMESPACE>.<PORTAL_DOMAIN>``` (i.e. https://apim-portal.example.com)
-12. (Optional) Contact Broadcom/CA Support if you do not currently have login credentials to apim-portal.packages.ca.com
-13. Update ```templates/docker-secret.yaml``` with login credentials to apim-portal.packages.ca.com
-    
-    Linux/Mac CLI commands from top-level directory of this repository:
-
-        export AUTH_STRING=$(echo -n "<USERNAME>:<PASSWORD>" | base64)
-        export DOCKERCONFIGJSON=$(echo -n "{\"auths\":{\"apim-portal.packages.ca.com\":{\"auth\":\"$AUTH_STRING\"}}}" | base64 -w 0)
-        echo "  .dockerconfigjson: $DOCKERCONFIGJSON" >> templates/docker-secret.yaml
-
-    The docker-secrets.yaml file should look like below:
-    
-        apiVersion: v1
-        kind: Secret
-        metadata:
-          name: bintray
-        type: kubernetes.io/dockerconfigjson
-        data:
-          .dockerconfigjson: <Long base64 string with credentials>
 
 ## Creating A Tenant
 
@@ -150,26 +150,26 @@ Instructions can be found at [Enroll a CA API Gateway](https://techdocs.broadcom
 For the GKE deployment use Nginx or GCE Ingress controller - 
 
 ### 1. Nginx controller
-	1. Deploy an Nginx controller with ssl passthrough enabled:
-		```
-		helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true --set controller.publishService.enabled=true --set controller.extraArgs.enable-ssl-passthrough=true --set tcp.9443="default/dispatcher:9443"
-		```
-	2. Enable GKE Ingress and turn off/disable openshift routes in k8s-helm-portal/values.yml
-		```
-		# GKE Ingress
-		ingress:
-			enabled: true
+1. Deploy an Nginx controller with ssl passthrough enabled:
+    ```
+    helm install --name nginx-ingress stable/nginx-ingress --set rbac.create=true --set controller.publishService.enabled=true --set controller.extraArgs.enable-ssl-passthrough=true --set tcp.9443="default/dispatcher:9443"
+    ```
+2. Enable GKE Ingress and turn off/disable openshift routes in k8s-helm-portal/values.yml
+    ```
+    # GKE Ingress
+    ingress:
+        enabled: true
 
-		route:
-		  enabled: false
-		```
-	3. Configure Helm Charts to use Nginx ingress controller
-		1. Go to k8s-helm-portal/templates/ingress.yaml 
-		2. add the following under annotations:
-			```
-			annotations:
-				kubernetes.io/ingress.class: nginx
-			```
+    route:
+      enabled: false
+    ```
+3. Configure Helm Charts to use Nginx ingress controller
+    1. Go to k8s-helm-portal/templates/ingress.yaml 
+    2. add the following under annotations:
+        ```
+        annotations:
+            kubernetes.io/ingress.class: nginx
+        ```
 	
 
 ### 2. Default GCE controller
