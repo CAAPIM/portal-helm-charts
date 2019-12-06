@@ -1,4 +1,5 @@
-# create_self_signed_certs.sh 
+# Helper Scripts
+## create_self_signed_certs.sh 
 
 Script to generate all non public facing self-signed certs in specified location.
 This script has no parameters, it will ask you to provide a password to protect those certs and folder location to store those certs.
