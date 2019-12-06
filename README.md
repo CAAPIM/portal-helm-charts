@@ -27,4 +27,4 @@ The following is a recommended workflow for installing API Portal in a Kubernete
 
 ![](https://techdocs.broadcom.com/content/dam/broadcom/techdocs/us/en/dita/ca-enterprise-software/layer7-api-management/api-developer-portal/apip44/topics/helmworkflow.png)
 
-> Complete documentation available from the [API Portal Helm Charts Wiki](https://github.com/CAAPIM/portal-helm-charts/wiki). 
+> Installation instructions available at the [API Portal Helm Charts Wiki](https://github.com/CAAPIM/portal-helm-charts/wiki). 
