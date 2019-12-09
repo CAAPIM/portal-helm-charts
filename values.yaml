@@ -220,7 +220,7 @@ user:
 
   telemetry:
     telemetry_pla_enabled: false
-    telemetry_usage_type: NONPRODUCTION
+    telemetry_usage_type: PRODUCTION
     telemetry_domain_name:
     telemetry_site_id:
     telemetry_chargeback_id:
