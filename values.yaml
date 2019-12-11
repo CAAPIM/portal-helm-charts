@@ -100,7 +100,7 @@ tenantProvisioner:
 
   image:
     pullPolicy: Always
-    
+
 minio:
   replicaCount: 1
   dnsPolicy: ClusterFirst
@@ -188,7 +188,7 @@ image:
   minio: minio:4.4
   historical: druid:4.4
   upgradeVerify: upgrade-verify:4.4
-  
+
 user:
   kubeNamespace: ca-apim
   legacyHostnames: false
@@ -218,6 +218,7 @@ user:
   papiUsername: papi
   papiPassword: 7layer
 
+
   telemetry:
     telemetry_pla_enabled: false
     telemetry_usage_type: PRODUCTION
@@ -237,7 +238,7 @@ secrets:
   tpsKeyPass: certpass
 
 persistence:
-  storage: 
+  storage:
     name: standard
     historical: 50Gi
     minio: 40Gi
