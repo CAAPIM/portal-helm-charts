@@ -190,7 +190,7 @@ image:
   upgradeVerify: upgrade-verify:4.4
   
 user:
-  kubeNamespace: ca-apim
+  kubeNamespace: dev-portal
   legacyHostnames: false
   legacyDatabaseNames: false
   domain: example.com
