@@ -218,7 +218,6 @@ user:
   papiUsername: papi
   papiPassword: 7layer
 
-
   telemetry:
     telemetry_pla_enabled: false
     telemetry_usage_type: PRODUCTION
