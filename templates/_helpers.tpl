@@ -501,3 +501,15 @@ The name of the zookeeper headless service.
 {{- end -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+ Ingress domain hosts
+*/}}
+{{- define "get-ingress-hosts" -}}
+    {{- $f:= .Values.user.domain -}}
+    {{ if empty $f }}
+        {{- fail "Please define domain in values.yaml" }}
+    {{- else }}
+        {{- printf "*.%s" .Values.user.domain }}
+    {{- end }}
+{{- end -}}

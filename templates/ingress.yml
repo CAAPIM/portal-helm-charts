@@ -9,7 +9,7 @@ spec:
   tls:
   - secretName: dispatcher-tls
     hosts:
-    - "*.example.com"
+    - {{ include "get-ingress-hosts" . | quote }}
   rules:
   - host: {{ include "default-tenant-host" . | quote }}
     http:
