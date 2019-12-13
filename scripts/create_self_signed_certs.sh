@@ -11,8 +11,6 @@
 # Usually, the self-signed certs location is under files folder of your api portal Helm packages, 
 # Make sure bash is at least 4.x, so that I can use associated array
 
-set -e
-
 # Set the defaults up
 DEFAULT_CERTPWD="certpass"
 SCRIPT_LOCATION="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -39,8 +37,17 @@ while getopts "l:s:p:" OPTION; do
   esac
 done
 
+
+function check_installed {
+  V=$(command -v ${1})
+  if [[ -z "$V" ]]; then
+    echo "Please install ${1}"
+    exit 1
+  fi
+}
+
 ###############################################
-# Fuction to generate APIM portal certs
+# Function to generate APIM portal certs
 
 function gen_certificate {
 	local key_name="$1"
@@ -70,13 +77,20 @@ function gen_certificate {
 	    -extensions v3_ca \
 	    -keyout $path/cakey.pem \
 	    -subj "/CN=${host}" \
-	    -out "$path/${key_name}.pem" \
+	    -out "$path/${key_name}-ca.pem" \
 	    -days $((365 * 3))
 	    rm $path/cakey.pem
+
+	  if [[ $? -eq 1 ]]; then
+	    echo "[ERROR] Failed to generate internal CA certificate"
+	    exit 1
+	  fi
   fi
   chmod 600 "$path/${key_name}".*
   retval=0
 }
+
+check_installed openssl
 
 # Generate all the self-signed certs
 

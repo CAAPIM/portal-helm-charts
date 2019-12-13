@@ -190,8 +190,8 @@ Get the smtp container SSL private key
 {{/*
 Get the smtp container CA pem
 */}}
-{{- define "smtp-internal-pem" -}}
-    {{- $f:= (.Files.Get "files/smtp-internal.pem")  }}
+{{- define "smtp-internal-ca-pem" -}}
+    {{- $f:= (.Files.Get "files/smtp-internal-ca.pem")  }}
     {{- if empty $f }}
         {{- fail "Please place the SMTP Postfix CA pem in the files directory" }}
     {{- else }}
