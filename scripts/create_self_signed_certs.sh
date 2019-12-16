@@ -17,9 +17,10 @@ SCRIPT_LOCATION="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd
 HELM_CHARTS_ROOT=$( echo "${SCRIPT_LOCATION}" | awk -F'scripts' '{ printf $1 }')
 DEFAULT_HELM_CHARTS_LOCATION="${HELM_CHARTS_ROOT}files"
 DEFAULT_SUBDOMAIN="example.com"
+DEFAULT_EXTERNAL_STMP="yes"
 
 # Check parameters
-while getopts "l:s:p:" OPTION; do
+while getopts "l:s:p:e:" OPTION; do
   case $OPTION in
     l)
 	  HELM_CHARTS_LOCATION=$OPTARG
@@ -27,12 +28,19 @@ while getopts "l:s:p:" OPTION; do
     s)
       SUBDOMAIN=$OPTARG;
       if ! [[ "$SUBDOMAIN" =~ ^[.a-zA-Z0-9\-]+\.[a-z]+$ ]]; then
-		  echo "$SUBDOMAIN is not a valid domain"
-		  exit 1;
+        echo "$SUBDOMAIN is not a valid domain"
+        exit 1;
 	  fi
       ;;
     p)
       CERTPWD=$OPTARG
+      ;;
+    e)
+      EXTERNAL_STMP=$OPTARG;
+      if ! [[ "$EXTERNAL_STMP" == "yes" || "$EXTERNAL_STMP" == "no" ]]; then
+        echo "'$EXTERNAL_STMP' is not a yes or no value"
+        exit 1;
+      fi
       ;;
   esac
 done
@@ -55,6 +63,12 @@ function gen_certificate {
 	local host="$3"
 	local cert_type="$4"
 	local path="$5"
+
+	if [[ ${4} == "internal_smtp_cert" && ${EXTERNAL_STMP} == "yes" ]]; then
+	  return
+	fi
+
+	echo "Generating certificate: $cert_key_name"
 
   openssl req -x509 -sha256 -nodes \
     -days $((365 * 3)) \
@@ -110,6 +124,25 @@ if [ -z "${HELM_CHARTS_LOCATION}" ]; then
 	fi
 fi
 
+if [ -z "${EXTERNAL_STMP}" ]; then
+  echo -n "Will you use an external SMTP server: [$DEFAULT_EXTERNAL_STMP]"
+  read REPLY
+  REPLY=$(echo $REPLY | tr '[:upper:]' '[:lower:]')
+  if test $REPLY ; then
+    EXTERNAL_STMP=$REPLY;
+  else
+    EXTERNAL_STMP=$DEFAULT_EXTERNAL_STMP;
+  fi
+  echo "$EXTERNAL_STMP"
+  if ! [[ "$EXTERNAL_STMP" == "yes" || "$EXTERNAL_STMP" == "no" ]]; then
+    echo "$REPLY is not a yes/no response"
+    exit 1
+  fi
+  if [ "$EXTERNAL_STMP" == "yes" ]; then
+    echo "Certificates for an internal SMTP server will not be generated."
+  fi
+fi
+
 if [ -z "${SUBDOMAIN}" ]; then
 	echo -n "Enter subdomain for the Portal: [$DEFAULT_SUBDOMAIN]"
 	read REPLY
@@ -155,6 +188,5 @@ do
   cert_key_name=${my_array[0]}
   cert_type=${my_array[1]}
   hostname=${my_array[2]}
-  echo "Generating certificate: $cert_key_name"
 	gen_certificate $cert_key_name $CERTPWD $hostname $cert_type $HELM_CHARTS_LOCATION
 done
