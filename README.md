@@ -20,7 +20,7 @@ The following components are involved in the deployment:
 ## Supported Form Factors
 These Kubernetes form factors have been tested and are officially supported:
 * Google Kubernetes Engine (GKE)
-* OpenShift Enterprise/OpenShift Container Platform 3.11 or higher
+* OpenShift Origin Community Distribution of Kubernetes Platform 3.11
 
 ## Installation Workflow
 The following is a recommended workflow for installing API Portal in a Kubernetes cluster:
