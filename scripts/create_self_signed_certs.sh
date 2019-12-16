@@ -79,12 +79,12 @@ function gen_certificate {
 	    -subj "/CN=${host}" \
 	    -out "$path/${key_name}-ca.pem" \
 	    -days $((365 * 3))
-	    rm $path/cakey.pem
 
 	  if [[ $? -eq 1 ]]; then
 	    echo "[ERROR] Failed to generate internal CA certificate"
 	    exit 1
 	  fi
+	  rm $path/cakey.pem
   fi
   chmod 600 "$path/${key_name}".*
   retval=0
