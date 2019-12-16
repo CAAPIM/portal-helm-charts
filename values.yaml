@@ -207,12 +207,12 @@ user:
   databaseUsername: admin
   databasePassword: 7layer
   # If setupInternalSMTP is false, you should provide the creds and cert for your external smtp
-  setupInternalSMTP: true
-  smtpHost: smtp
-  smtpPassword: supersecret
-  smtpPort: 25
-  smtpRequireSSL: true
-  smtpUsername: superuser
+  setupInternalSMTP: false
+  smtpHost: notinstalled
+  smtpPassword: notinstalled
+  smtpPort: notinstalled
+  smtpRequireSSL: false
+  smtpUsername: notinstalled
   hostnameWhitelist:
   defaultTenantId: apim
   papiUsername: papi
