@@ -38,7 +38,7 @@ while getopts "l:s:p:e:" OPTION; do
     e)
       EXTERNAL_STMP=$OPTARG;
       if ! [[ "$EXTERNAL_STMP" == "yes" || "$EXTERNAL_STMP" == "no" ]]; then
-        echo "'$EXTERNAL_STMP' is not a yes or no value"
+        echo "-e expects a yes or no value, received: '$EXTERNAL_STMP'"
         exit 1;
       fi
       ;;
