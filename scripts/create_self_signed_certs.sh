@@ -125,7 +125,7 @@ if [ -z "${HELM_CHARTS_LOCATION}" ]; then
 fi
 
 if [ -z "${EXTERNAL_STMP}" ]; then
-  echo -n "Will you use an external SMTP server: [$DEFAULT_EXTERNAL_STMP]"
+  echo -n "Will you use an external SMTP server (yes/no): [$DEFAULT_EXTERNAL_STMP]"
   read REPLY
   REPLY=$(echo $REPLY | tr '[:upper:]' '[:lower:]')
   if test $REPLY ; then
