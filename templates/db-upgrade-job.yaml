@@ -26,6 +26,8 @@ spec:
              value: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
            - name: CREATE_DATABASE
              value: "true"
+           - name: TSSG_TENANT_ID
+             value: {{ include "default-tenant-id" . | quote }}
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"
