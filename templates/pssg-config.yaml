@@ -10,7 +10,15 @@ data:
   CONFIG_DSSG_DATALAKE_HOST: {{ include "analytics-host" . | quote }}
   CONFIG_DSSG_DATALAKE_PORT: "443"
   CONFIG_ENROLL_NOTIFICATION_EMAIL: {{ required "Please fill in enrollNotificationEmail in values.yaml"  .Values.user.enrollNotificationEmail }}
+  {{- if .Values.user.setupInternalSMTP }}
   CONFIG_MAIL_SMTP_CERT: {{ include "smtp-internal-crt" . | b64enc | quote }}
+  {{- else }}
+    {{- if eq .Values.user.smtpCert "notinstalled" }}
+  CONFIG_MAIL_SMTP_CERT: {{ required "Please fill in smtpCert in values.yaml" .Values.user.smtpCert }}
+    {- else }
+  CONFIG_MAIL_SMTP_CERT: {{ include "smtp-external-crt" . | b64enc | quote }}
+    {{- end}}
+  {{- end}}
   CONFIG_MAIL_SMTP_HOST: {{ required "Please fill in smtpHost in values.yaml" .Values.user.smtpHost }}
   CONFIG_MAIL_SMTP_PASSWORD: {{ required "Please fill in smtpPassword in values.yaml" .Values.user.smtpPassword }}
   CONFIG_MAIL_SMTP_PORT: {{ required "Please fill in smtpPort in values.yaml" .Values.user.smtpPort | quote }}
