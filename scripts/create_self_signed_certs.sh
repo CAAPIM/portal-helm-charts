@@ -11,17 +11,16 @@
 # Usually, the self-signed certs location is under files folder of your api portal Helm packages, 
 # Make sure bash is at least 4.x, so that I can use associated array
 
-set -e
-
 # Set the defaults up
 DEFAULT_CERTPWD="certpass"
 SCRIPT_LOCATION="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 HELM_CHARTS_ROOT=$( echo "${SCRIPT_LOCATION}" | awk -F'scripts' '{ printf $1 }')
 DEFAULT_HELM_CHARTS_LOCATION="${HELM_CHARTS_ROOT}files"
 DEFAULT_SUBDOMAIN="example.com"
+DEFAULT_EXTERNAL_STMP="yes"
 
 # Check parameters
-while getopts "l:s:p:" OPTION; do
+while getopts "l:s:p:e:" OPTION; do
   case $OPTION in
     l)
 	  HELM_CHARTS_LOCATION=$OPTARG
@@ -29,18 +28,34 @@ while getopts "l:s:p:" OPTION; do
     s)
       SUBDOMAIN=$OPTARG;
       if ! [[ "$SUBDOMAIN" =~ ^[.a-zA-Z0-9\-]+\.[a-z]+$ ]]; then
-		  echo "$SUBDOMAIN is not a valid domain"
-		  exit 1;
+        echo "$SUBDOMAIN is not a valid domain"
+        exit 1;
 	  fi
       ;;
     p)
       CERTPWD=$OPTARG
       ;;
+    e)
+      EXTERNAL_STMP=$OPTARG;
+      if ! [[ "$EXTERNAL_STMP" == "yes" || "$EXTERNAL_STMP" == "no" ]]; then
+        echo "-e expects a yes or no value, received: '$EXTERNAL_STMP'"
+        exit 1;
+      fi
+      ;;
   esac
 done
 
+
+function check_installed {
+  V=$(command -v ${1})
+  if [[ -z "$V" ]]; then
+    echo "Please install ${1}"
+    exit 1
+  fi
+}
+
 ###############################################
-# Fuction to generate APIM portal certs
+# Function to generate APIM portal certs
 
 function gen_certificate {
 	local key_name="$1"
@@ -48,6 +63,12 @@ function gen_certificate {
 	local host="$3"
 	local cert_type="$4"
 	local path="$5"
+
+	if [[ ${4} == "internal_smtp_cert" && ${EXTERNAL_STMP} == "yes" ]]; then
+	  return
+	fi
+
+	echo "Generating certificate: $cert_key_name"
 
   openssl req -x509 -sha256 -nodes \
     -days $((365 * 3)) \
@@ -70,13 +91,20 @@ function gen_certificate {
 	    -extensions v3_ca \
 	    -keyout $path/cakey.pem \
 	    -subj "/CN=${host}" \
-	    -out "$path/${key_name}.pem" \
+	    -out "$path/${key_name}-ca.pem" \
 	    -days $((365 * 3))
-	    rm $path/cakey.pem
+
+	  if [[ $? -eq 1 ]]; then
+	    echo "[ERROR] Failed to generate internal CA certificate"
+	    exit 1
+	  fi
+	  rm $path/cakey.pem
   fi
   chmod 600 "$path/${key_name}".*
   retval=0
 }
+
+check_installed openssl
 
 # Generate all the self-signed certs
 
@@ -94,6 +122,25 @@ if [ -z "${HELM_CHARTS_LOCATION}" ]; then
 		echo "$HELM_CHARTS_LOCATION is not a valid directory" 
 		exit 1; 
 	fi
+fi
+
+if [ -z "${EXTERNAL_STMP}" ]; then
+  echo -n "Will you use an external SMTP server (yes/no): [$DEFAULT_EXTERNAL_STMP]"
+  read REPLY
+  REPLY=$(echo $REPLY | tr '[:upper:]' '[:lower:]')
+  if test $REPLY ; then
+    EXTERNAL_STMP=$REPLY;
+  else
+    EXTERNAL_STMP=$DEFAULT_EXTERNAL_STMP;
+  fi
+  echo "$EXTERNAL_STMP"
+  if ! [[ "$EXTERNAL_STMP" == "yes" || "$EXTERNAL_STMP" == "no" ]]; then
+    echo "$REPLY is not a yes/no response"
+    exit 1
+  fi
+  if [ "$EXTERNAL_STMP" == "yes" ]; then
+    echo "Certificates for an internal SMTP server will not be generated."
+  fi
 fi
 
 if [ -z "${SUBDOMAIN}" ]; then
@@ -141,6 +188,5 @@ do
   cert_key_name=${my_array[0]}
   cert_type=${my_array[1]}
   hostname=${my_array[2]}
-  echo "Generating certificate: $cert_key_name"
 	gen_certificate $cert_key_name $CERTPWD $hostname $cert_type $HELM_CHARTS_LOCATION
 done
