@@ -15,7 +15,7 @@ data:
   {{- else }}
     {{- if eq .Values.user.smtpCert "notinstalled" }}
   CONFIG_MAIL_SMTP_CERT: {{ required "Please fill in smtpCert in values.yaml" .Values.user.smtpCert }}
-    {- else }
+    {{- else }}
   CONFIG_MAIL_SMTP_CERT: {{ include "smtp-external-crt" . | b64enc | quote }}
     {{- end}}
   {{- end}}
