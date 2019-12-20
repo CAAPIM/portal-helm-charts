@@ -164,18 +164,6 @@ Get the pssg container SSL certificate and key bundle
 {{- end -}}
 
 {{/*
-Get a user provided SMTP certificate
-*/}}
-{{- define "smtp-external-crt" -}}
-    {{- $f:= (.Files.Get .Values.user.smtpCert)  }}
-    {{- if empty $f }}
-        {{- fail "Please place the external SMTP SSL certificate in the files directory" }}
-    {{- else }}
-        {{- print $f }}
-    {{- end }}
-{{- end -}}
-
-{{/*
 Get the smtp container SSL certificate
 */}}
 {{- define "smtp-internal-crt" -}}
