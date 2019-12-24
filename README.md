@@ -8,4 +8,4 @@ There's a wealth of instructional and reference information available for settin
 ## License
 Copyright (c) 2019 CA, A Broadcom Company. All rights reserved.
 
-This software may be modified and distributed under the terms of the MIT license. See the LICENSE file for details.
+This software may be modified and distributed under the terms of the MIT license. See the [LICENSE](https://github.com/CAAPIM/portal-helm-charts/blob/master/LICENSE) file for details.
