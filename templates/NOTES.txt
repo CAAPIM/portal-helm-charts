@@ -8,7 +8,17 @@ To learn more about the release, try:
   $ helm get {{ .Release.Name }}
 
 After the all pods are successfully running you can access the portal at:
-{{ printf "%s.%s" .Values.user.defaultTenantId .Values.user.domain }}
+default tenant url: {{ include "default-tenant-host" . }}
+papi url: {{ include "tssg-public-host" . }}
+enroll url: {{ include "pssg-enroll-host" . }}
+sync url: {{ include "pssg-sync-host" . }}
+sso url: {{ include "pssg-sso-host" . }}
+analytics url: {{ include "analytics-host" . }}
+broker url: {{ include "broker-host" . }}
+
+{{- if .Values.user.externalTenant }}
+external tenant url: {{ include "external-tenant-host" . }}
+{{- end }}
 
 If this domain is not in your DNS records please add the a record in your
 hosts file to point this domain to any of your kubernetes worker nodes.

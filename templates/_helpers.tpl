@@ -336,9 +336,8 @@ Get "druid" database name
 Portal Docops page
 */}}
 {{- define "portal.help.page" -}}
-{{- printf "%s" "https://docops.ca.com/ca-api-developer-portal-enhanced-experience/4-3/en/" -}}
+{{- printf "%s" "https://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/api-developer-portal/4-4.html" -}}
 {{- end -}}
-
 
 {{/*
 Generate a unique "default-tenant-id" appended with the kubeNamespace to enable multiple deployments on
@@ -431,6 +430,17 @@ Generate default tenant endpoint based on configurations
         {{- printf "%s.%s" .Values.user.defaultTenantId .Values.user.domain -}}
     {{- else }}
         {{- printf "%s-%s.%s" .Values.user.defaultTenantId .Values.user.kubeNamespace .Values.user.domain -}}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Generate external tenant endpoint based on configurations
+*/}}
+{{- define "external-tenant-host" -}}
+    {{- if .Values.user.legacyHostnames }}
+        {{- printf "%s.%s" .Values.user.externalTenant .Values.user.domain -}}
+    {{- else }}
+        {{- printf "%s-%s.%s" .Values.user.externalTenant .Values.user.kubeNamespace .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 

@@ -19,7 +19,7 @@ data:
   PAPI_USERNAME: {{ .Values.user.papiUsername | quote }}
   PORTAL_VERSION: {{ .Chart.AppVersion }}
   PORTAL_DATABASE_NAME: {{ include "portal-db-name" . | quote }}
-  RABBITMQ_PASS: {{ .Values.rabbitmq.config.password | quote }}
+  RABBITMQ_PASSWORD: {{ .Values.rabbitmq.config.password | quote }}
   RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
   RABBITMQ_USER: {{ .Values.rabbitmq.config.username | quote }}
   TPS_SSL_CERT: {{ include "tps-crt" . | b64enc | quote }}

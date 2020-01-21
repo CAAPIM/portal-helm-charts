@@ -1,2 +1,6 @@
 .DS_Store
 files/License.gz
+files/*.crt
+files/*.key
+files/*.p12
+files/*.pem

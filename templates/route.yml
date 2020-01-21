@@ -9,7 +9,7 @@ metadata:
 spec:
   host: {{ include "default-tenant-host" . | quote }}
   {{- if .Values.user.externalTenant }}
-  host: {{ printf "%s.%s" .Values.user.externalTenant .Values.user.domain | quote }}
+  host: {{ include "external-tenant-host" . | quote }}
   {{- end }}
   port:
     targetPort: portal-https
