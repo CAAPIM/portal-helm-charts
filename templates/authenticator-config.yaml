@@ -11,7 +11,7 @@ data:
   JAVA_OPTIONS: -Xms1024m -Xmx1024m
   NSS_SDB_USE_CACHE: "no"
   PORTAL_VERSION: {{ .Chart.AppVersion }}
-  RABBITMQ_PASS: {{ .Values.rabbitmq.config.password | quote }}
+  RABBITMQ_PASSWORD: {{ .Values.rabbitmq.config.password | quote }}
   RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
   RABBITMQ_USER: {{ .Values.rabbitmq.config.username | quote }}
 kind: ConfigMap

@@ -54,7 +54,7 @@ spec:
           serviceName: apim
           servicePort: {{ printf "%s-broker" .Values.user.defaultTenantId | quote }}
   {{- if .Values.user.externalTenant }}
-  - host: {{ printf "%s.%s" .Values.user.externalTenant .Values.user.domain | quote }}
+  - host: {{ include "external-tenant-host" . | quote }}
     http:
       paths:
       - backend:
