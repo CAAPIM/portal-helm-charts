@@ -195,8 +195,6 @@ user:
   legacyDatabaseNames: false
   domain: example.com
   # the subdomain you would like to use for your external tenant. By providing a value, an ingress rule will be created for accessing
-  # an external tenant
-  externalTenant:
   analyticsEnabled: true
   ssoDebug: false
   enrollNotificationEmail: noreply@mail.example.com

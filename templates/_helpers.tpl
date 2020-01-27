@@ -434,17 +434,6 @@ Generate default tenant endpoint based on configurations
 {{- end -}}
 
 {{/*
-Generate external tenant endpoint based on configurations
-*/}}
-{{- define "external-tenant-host" -}}
-    {{- if .Values.user.legacyHostnames }}
-        {{- printf "%s.%s" .Values.user.externalTenant .Values.user.domain -}}
-    {{- else }}
-        {{- printf "%s-%s.%s" .Values.user.externalTenant .Values.user.kubeNamespace .Values.user.domain -}}
-    {{- end }}
-{{- end -}}
-
-{{/*
 Get "database-port" based on databaseType value
 
 Override logic:
