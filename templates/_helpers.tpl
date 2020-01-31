@@ -333,6 +333,22 @@ Get "druid" database name
 {{- end -}}
 
 {{/*
+Get "analytics" database name
+*/}}
+{{- define "analytics-db-name" -}}
+    {{ if .Values.user.legacyDatabaseNames }}
+        {{- print "analytics" }}
+    {{- else }}
+        {{- $f:= .Values.user.kubeNamespace -}}
+        {{ if empty $f }}
+            {{- fail "Please define kubeNamespace in values.yaml" }}
+        {{- else }}
+            {{- printf "%s_%s" $f "analytics" | replace "-" "_" -}}
+        {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
 Portal Docops page
 */}}
 {{- define "portal.help.page" -}}
