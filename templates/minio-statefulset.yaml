@@ -1,5 +1,4 @@
 {{- if .Values.user.analyticsEnabled -}}
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -51,6 +50,8 @@ spec:
           envFrom:
           - configMapRef:
               name: minio-config
+          - secretRef:
+              name: minio-secret
           ports:
             - containerPort: 9000
           resources:

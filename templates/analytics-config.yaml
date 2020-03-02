@@ -1,27 +1,19 @@
 apiVersion: v1
 kind: ConfigMap
-data:
-  BROKER_HOST: broker
-  BROKER_PORT: "8082"
-  ANALYTICS_ENABLED: {{ .Values.user.analyticsEnabled | quote }}
-  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
-  DATABASE_NAME: {{ include "portal-db-name" . | quote }}
-  DATABASE_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
-  DATABASE_PORT: {{ include "database-port" . | quote }}
-  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
-  DATABASE_USERNAME: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
-  NSS_SDB_USE_CACHE: "no"
-  ONPREM: "true"
-  PORTAL_VERSION: {{ .Chart.AppVersion }}
-  RABBITMQ_HOST: "{{ .Values.rabbitmq.name }}"
-  RABBITMQ_PASSWORD: {{ .Values.rabbitmq.config.password | quote }}
-  RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
-  RABBITMQ_USER: {{ .Values.rabbitmq.config.username | quote }}
-  PAPI_PASSWORD: {{ .Values.user.papiPassword | quote }}
-  PAPI_USERNAME: {{ .Values.user.papiUsername | quote }}
-  PAPI_PUBLIC_HOST: {{ include "tssg-public-host" . | quote }}
-  PAPI_INGRESS_TENANT: {{ include "default-tenant-id" . | quote }}
 metadata:
   labels:
     name: analytics-server
   name: analytics-server-config
+data:
+  BROKER_HOST: broker
+  BROKER_PORT: "8082"
+  ANALYTICS_ENABLED: {{ .Values.user.analyticsEnabled | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  RABBITMQ_HOST: "{{ .Values.rabbitmq.name }}"
+  RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
+  NSS_SDB_USE_CACHE: "no"
+  ONPREM: "true"
+  PORTAL_VERSION: {{ .Chart.AppVersion }}
+  PAPI_PUBLIC_HOST: {{ include "tssg-public-host" . | quote }}
+  PAPI_INGRESS_TENANT: {{ include "default-tenant-id" . | quote }}

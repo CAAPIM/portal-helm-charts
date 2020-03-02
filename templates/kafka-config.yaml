@@ -1,5 +1,10 @@
 {{- if .Values.user.analyticsEnabled -}}
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: kafka
+  name: kafka-config
 data:
   SERVICE_NAME: kafka
   KAFKA_PORT: "9092"
@@ -8,9 +13,4 @@ data:
   KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
   KAFKA_LISTENERS: PLAINTEXT://:9092
   BROKER_ID_COMMAND: echo $HOSTNAME | rev | cut -d "-" -f 1 
-kind: ConfigMap
-metadata:
-  labels:
-    name: kafka
-  name: kafka-config
 {{- end -}}

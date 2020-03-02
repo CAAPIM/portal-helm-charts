@@ -28,6 +28,8 @@ spec:
           envFrom:
           - configMapRef:
               name: ingestion-server-config
+          - secretRef:
+              name: ingestion-server-secret
           readinessProbe:
             exec:
               command: [sh, /opt/app/diagnostic/health_check.sh]

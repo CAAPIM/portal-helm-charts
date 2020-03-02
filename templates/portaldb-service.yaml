@@ -1,4 +1,4 @@
-{{- if .Values.user.setupDemoDatabase -}}
+{{- if .Values.user.deployDatabase -}}
 apiVersion: v1
 kind: Service
 metadata:

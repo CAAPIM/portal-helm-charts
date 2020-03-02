@@ -21,33 +21,56 @@ spec:
         name: dispatcher
     spec:
       containers:
-        - name: dispatcher
-          image: "{{ .Values.image.portalRepository }}{{ .Values.image.dispatcher }}"
-          imagePullPolicy: "{{ .Values.dispatcher.image.pullPolicy }}"
-          envFrom:
+      - name: dispatcher
+        image: "{{ .Values.image.portalRepository }}{{ .Values.image.dispatcher }}"
+        imagePullPolicy: "{{ .Values.dispatcher.image.pullPolicy }}"    
+        envFrom:
           - configMapRef:
               name: dispatcher-config
-          readinessProbe:
-            exec:
-              command: ["sh", "/usr/bin/healthcheck"]
-            initialDelaySeconds: 60
-            timeoutSeconds: 5
-            periodSeconds: 15
-            successThreshold: 1
-          livenessProbe:
-            exec:
-              command: ["sh", "/usr/bin/healthcheck"]
-            initialDelaySeconds: 300
-            timeoutSeconds: 5
-            periodSeconds: 15
-            successThreshold: 1
-          resources:
-            requests:
-              cpu: 100m
-              memory: 250Mi
-            limits:
-              cpu: 500m
-              memory: 1024Mi
+          - secretRef:
+              name: dispatcher-secret
+        {{- if and (eq .Values.ingress.enabled true) (eq .Values.ingress.controller "GCE") }}
+        readinessProbe:
+           httpGet:
+              path: /nginx_status
+              port: 8443
+              scheme: HTTPS
+           initialDelaySeconds: 60
+           timeoutSeconds: 5
+           periodSeconds: 15
+           successThreshold: 1
+        livenessProbe:
+           httpGet:
+              path: /nginx_status
+              port: 8443
+              scheme: HTTPS
+           initialDelaySeconds: 300
+           timeoutSeconds: 5
+           periodSeconds: 15
+           successThreshold: 1
+        {{- else }}
+        readinessProbe:
+          exec:
+            command: ["sh", "/usr/bin/healthcheck"]
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          periodSeconds: 15
+          successThreshold: 1
+        livenessProbe:
+          exec:
+            command: ["sh", "/usr/bin/healthcheck"]
+          initialDelaySeconds: 300
+          timeoutSeconds: 5
+          periodSeconds: 15
+          successThreshold: 1
+        {{- end }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            cpu: 500m
+            memory: 1024Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"

@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portal-data
+  name: pssg
   labels:
-    name: portal-data
+    name: pssg
 spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
-  replicas: {{ .Values.portalData.replicaCount }}
+  replicas: {{ .Values.pssg.replicaCount }}
   selector:
     matchLabels:
-      name: portal-data
+      name: pssg
   template:
     metadata:
       labels:
-        name: portal-data
+        name: pssg
     spec:
       serviceAccountName:  portal-service-account
       initContainers:
@@ -29,45 +29,58 @@ spec:
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
           args: ["job", 'rbac-upgrade']
       containers:
-      - name: portal-data
-        image: "{{ .Values.image.portalRepository }}{{ .Values.image.data }}"
-        imagePullPolicy: "{{ .Values.portalData.image.pullPolicy }}"
+      - name: pssg
+        image: "{{ .Values.image.portalRepository }}{{ .Values.image.pssg }}"
+        imagePullPolicy: "{{ .Values.pssg.image.pullPolicy }}"
         envFrom:
           - configMapRef:
-              name: portal-data-config
+              name: pssg-config
           - secretRef:
-              name: portal-data-secret
+              name: pssg-secret
         readinessProbe:
           exec:
-            command:
-              - livenesscheck
+            command: [sh, /opt/docker/diagnostic/health_check.sh]
           initialDelaySeconds: 120
           timeoutSeconds: 1
-          periodSeconds: 15
+          periodSeconds: 10
           successThreshold: 1
           failureThreshold: 20
         livenessProbe:
           exec:
-            command:
-              - livenesscheck
+            command: [sh, /opt/docker/diagnostic/health_check.sh]
           initialDelaySeconds: 120
           timeoutSeconds: 1
-          periodSeconds: 15
+          periodSeconds: 10
           successThreshold: 1
           failureThreshold: 20
         ports:
           - containerPort: 8080
+          - containerPort: 8443
+          - containerPort: 9446
+          - containerPort: 9447
+          - containerPort: 9448
+        volumeMounts:
+          - name: portal-license-xml
+            mountPath: /opt/SecureSpan/Gateway/node/default/etc/bootstrap/license/license.xml
+            subPath: license.xml
         resources:
           requests:
             cpu: 100m
-            memory: 1500Mi
+            memory: 2048Mi
           limits:
-            cpu: 1000m
-            memory: 3072Mi
+            cpu: 2000m
+            memory: 4608Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"
       {{- end }}
-      dnsPolicy: "{{ .Values.portalData.dnsPolicy }}"
+      dnsPolicy: "{{ .Values.pssg.dnsPolicy }}"
       restartPolicy: Always
       terminationGracePeriodSeconds: 60
+      volumes:
+        - name: portal-license-xml
+          secret:
+            secretName: portal-license
+            items:
+              - key: license
+                path: license.xml

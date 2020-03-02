@@ -42,6 +42,8 @@ spec:
           envFrom:
           - configMapRef:
               name: historical-config
+          - secretRef:
+              name: historical-secret
           readinessProbe:
             exec:
               command: [sh, /opt/diagnostic/health_check.sh]

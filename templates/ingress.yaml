@@ -5,6 +5,7 @@ metadata:
   name: portal-ingress
   annotations:
     nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    kubernetes.io/ingress.class: {{ .Values.ingress.class | quote}}
 spec:
   tls:
   - secretName: dispatcher-tls

@@ -4,3 +4,4 @@ files/*.crt
 files/*.key
 files/*.p12
 files/*.pem
+templates/docker-secret.yaml

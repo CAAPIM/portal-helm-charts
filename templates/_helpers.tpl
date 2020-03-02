@@ -35,9 +35,9 @@ Create chart name and version as used by the chart label.
 Get the license file required by the portal
 */}}
 {{- define "portal-license" -}}
-{{- $f:= (.Files.Get "files/License.gz")  }}
+{{- $f:= (.Files.Get "files/license.xml")  }}
 {{- if empty $f }}
-{{- fail "Please place the gziped SSG license in the files directory" }}
+{{- fail "Please place the SSG license in the files directory" }}
 {{- else }}
 {{- print $f }}
 {{- end }}
@@ -152,6 +152,30 @@ Get the dispatcher container SSL certificate and private key bundle
 {{- end -}}
 
 {{/*
+Get the dispatcher container SSL private key
+*/}}
+{{- define "dispatcher-key" -}}
+    {{- $f:= (.Files.Get "files/dispatcher-ssl.key")  }}
+    {{- if empty $f }}
+        {{- fail "Please place the dispatcher SSL key in the files directory" }}
+    {{- else }}
+        {{- print $f }}
+    {{- end }}
+{{- end -}}
+
+{{/*
+Get the dispatcher container SSL certificate
+*/}}
+{{- define "dispatcher-crt" -}}
+    {{- $f:= (.Files.Get "files/dispatcher-ssl.crt")  }}
+    {{- if empty $f }}
+        {{- fail "Please place the dispatcher container certificate the files directory" }}
+    {{- else }}
+        {{- print $f }}
+    {{- end }}
+{{- end -}}
+
+{{/*
 Get the pssg container SSL certificate and key bundle
 */}}
 {{- define "pssg-ssl" -}}
@@ -242,9 +266,9 @@ Get "portal" database name
     {{ if .Values.user.legacyDatabaseNames }}
         {{- print "portal" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "portal" | replace "-" "_" -}}
         {{- end }}
@@ -258,9 +282,9 @@ Get "otk" database name
     {{ if .Values.user.legacyDatabaseNames }}
         {{- print "apim_otk_db" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "otk_db" | replace "-" "_" -}}
         {{- end }}
@@ -274,9 +298,9 @@ Get "rbac" database name
     {{ if .Values.user.legacyDatabaseNames }}
         {{- print "rbac" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "rbac" | replace "-" "_" -}}
         {{- end }}
@@ -290,9 +314,9 @@ Get "tenant provisioning" database name
     {{ if  .Values.user.legacyDatabaseNames }}
         {{- print "tenant_provisioning" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "tenant_provisioning" | replace "-" "_" -}}
         {{- end }}
@@ -306,9 +330,9 @@ Get "ldds" database name
     {{- if .Values.user.legacyDatabaseNames }}
         {{- print "lddsdb" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "lddsdb" | replace "-" "_" -}}
         {{- end }}
@@ -323,9 +347,9 @@ Get "druid" database name
     {{ if .Values.user.legacyDatabaseNames }}
         {{- print "druid" }}
     {{- else }}
-        {{- $f:= .Values.user.kubeNamespace -}}
+        {{- $f:= .Values.user.subdomainPrefix -}}
         {{ if empty $f }}
-            {{- fail "Please define kubeNamespace in values.yaml" }}
+            {{- fail "Please define subdomainPrefix in values.yaml" }}
         {{- else }}
             {{- printf "%s_%s" $f "druid" | replace "-" "_" -}}
         {{- end }}
@@ -340,7 +364,7 @@ Portal Docops page
 {{- end -}}
 
 {{/*
-Generate a unique "default-tenant-id" appended with the kubeNamespace to enable multiple deployments on
+Generate a unique "default-tenant-id" appended with the subdomainPrefix to enable multiple deployments on
 one k8s cluster
 */}}
 {{- define "default-tenant-id" -}}
@@ -351,7 +375,7 @@ one k8s cluster
         {{- if .Values.user.legacyHostnames }}
             {{- printf .Values.user.defaultTenantId | replace "_" "-" -}}
         {{- else }}
-            {{- printf "%s-%s" .Values.user.defaultTenantId .Values.user.kubeNamespace | replace "_" "-" -}}
+            {{- printf "%s-%s" .Values.user.defaultTenantId .Values.user.subdomainPrefix | replace "_" "-" -}}
         {{- end }}
     {{- end }}
 {{- end -}}
@@ -363,7 +387,7 @@ Generate Ingress SSG endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "ssg.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-ssg.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-ssg.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -374,7 +398,7 @@ Generate Rabbit MQ endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "broker.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-broker.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-broker.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -385,7 +409,7 @@ Generate PSSG enrolment endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "enroll.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-enroll.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-enroll.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -396,7 +420,7 @@ Generate PSSG sync endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "sync.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-sync.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-sync.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -407,7 +431,7 @@ Generate PSSG SSO endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "sso.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-sso.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-sso.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -418,7 +442,7 @@ Generate analytics endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "analytics.%s" .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-analytics.%s" .Values.user.kubeNamespace  .Values.user.domain -}}
+        {{- printf "%s-analytics.%s" .Values.user.subdomainPrefix  .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -429,7 +453,7 @@ Generate default tenant endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "%s.%s" .Values.user.defaultTenantId .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-%s.%s" .Values.user.defaultTenantId .Values.user.kubeNamespace .Values.user.domain -}}
+        {{- printf "%s-%s.%s" .Values.user.defaultTenantId .Values.user.subdomainPrefix .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -440,7 +464,7 @@ Generate external tenant endpoint based on configurations
     {{- if .Values.user.legacyHostnames }}
         {{- printf "%s.%s" .Values.user.externalTenant .Values.user.domain -}}
     {{- else }}
-        {{- printf "%s-%s.%s" .Values.user.externalTenant .Values.user.kubeNamespace .Values.user.domain -}}
+        {{- printf "%s-%s.%s" .Values.user.externalTenant .Values.user.subdomainPrefix .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 
@@ -454,7 +478,7 @@ Override logic:
 
 */}}
 {{- define "database-port" -}}
-    {{ if .Values.user.setupDemoDatabase }}
+    {{ if .Values.user.deployDatabase }}
         {{- $f:= .Values.user.databaseType -}}
         {{ if empty $f }}
             {{- fail "Please define databaseType in values.yaml" }}

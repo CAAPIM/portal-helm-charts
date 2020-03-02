@@ -31,38 +31,40 @@ spec:
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
           args: ["job", 'rbac-upgrade']
       containers:
-        - name: tenant-provisioner-service
-          image: "{{ .Values.image.portalRepository }}{{ .Values.image.tps }}"
-          imagePullPolicy: "{{ .Values.tenantProvisioner.image.pullPolicy }}"
-          ports:
-            - containerPort: 9000
-              protocol: TCP
-            - containerPort: 9001
-              protocol: TCP
-          envFrom:
-          - configMapRef:
-              name: tenant-provisioner-config
-          readinessProbe:
-            exec:
-              command: ["sh", "/opt/app/healthcheck.sh"]
-            initialDelaySeconds: 90
-            timeoutSeconds: 1
-            periodSeconds: 15
-            successThreshold: 1
-          livenessProbe:
-            exec:
-              command: ["sh", "/opt/app/healthcheck.sh"]
-            initialDelaySeconds: 300
-            timeoutSeconds: 1
-            periodSeconds: 15
-            successThreshold: 1
-          resources:
-            requests:
-              cpu: 100m
-              memory: 250Mi
-            limits:
-              cpu: 1000m
-              memory: 1536Mi
+      - name: tenant-provisioner-service
+        image: "{{ .Values.image.portalRepository }}{{ .Values.image.tps }}"
+        imagePullPolicy: "{{ .Values.tenantProvisioner.image.pullPolicy }}"
+        envFrom:
+        - configMapRef:
+            name: tenant-provisioner-config
+        - secretRef:
+            name: tenant-provisioner-secret
+        readinessProbe:
+          exec:
+            command: ["sh", "/opt/app/healthcheck.sh"]
+          initialDelaySeconds: 90
+          timeoutSeconds: 1
+          periodSeconds: 15
+          successThreshold: 1
+        ports:
+          - containerPort: 9000
+            protocol: TCP
+          - containerPort: 9001
+            protocol: TCP
+        livenessProbe:
+          exec:
+            command: ["sh", "/opt/app/healthcheck.sh"]
+          initialDelaySeconds: 300
+          timeoutSeconds: 1
+          periodSeconds: 15
+          successThreshold: 1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 250Mi
+          limits:
+            cpu: 1000m
+            memory: 1536Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"

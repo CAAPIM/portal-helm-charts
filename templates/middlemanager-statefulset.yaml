@@ -1,5 +1,4 @@
 {{- if .Values.user.analyticsEnabled -}}
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -40,6 +39,8 @@ spec:
           envFrom:
           - configMapRef:
               name: middlemanager-config
+          - secretRef:
+              name: middlemanager-secret
           readinessProbe:
             exec:
               command: [sh, /opt/diagnostic/health_check.sh]

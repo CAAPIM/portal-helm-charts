@@ -19,7 +19,7 @@ spec:
       labels:
         name: apim
     spec:
-      serviceAccountName:  portal-service-account
+      serviceAccountName: portal-service-account
       initContainers:
         - name: liquidbase-upgrade-portal
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
@@ -28,42 +28,50 @@ spec:
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
           args: ["job", 'rbac-upgrade']
       containers:
-        - name: apim
-          image: "{{ .Values.image.portalRepository }}{{ .Values.image.apim }}"
-          imagePullPolicy: {{ .Values.apim.image.pullPolicy | quote }}
-          envFrom:
+      - name: apim
+        image: "{{ .Values.image.portalRepository }}{{ .Values.image.apim }}"
+        imagePullPolicy: {{ .Values.apim.image.pullPolicy | quote }}
+        envFrom:
           - configMapRef:
               name: apim-config
-          readinessProbe:
-            httpGet:
-              path: /sys/probe/readinesscheck
-              port: 8080
-            initialDelaySeconds: 90
-            timeoutSeconds: 1
-            periodSeconds: 15
-            successThreshold: 1
-          livenessProbe:
-            exec:
-              command: [sh, /opt/docker/diagnostic/health_check.sh]
-            initialDelaySeconds: 300
-            timeoutSeconds: 1
-            periodSeconds: 15
-            successThreshold: 1
-          ports:
-            - containerPort: 8080
-            - containerPort: 8081
-            - containerPort: 8443
-            - containerPort: 9443
-            - containerPort: 9449
-            - containerPort: 1885
-            - containerPort: 9448
-          resources:
-            requests:
-              cpu: 100m
-              memory: 4096Mi
-            limits:
-              cpu: 2000m
-              memory: 8192Mi
+          - secretRef:
+              name: apim-secret
+        readinessProbe:
+          httpGet:
+            path: /sys/probe/readinesscheck
+            port: 8080
+          initialDelaySeconds: 300
+          timeoutSeconds: 1
+          periodSeconds: 15
+          successThreshold: 1
+          failureThreshold: 30
+        livenessProbe:
+          exec:
+            command: [sh, /opt/docker/diagnostic/health_check.sh]
+          initialDelaySeconds: 300
+          timeoutSeconds: 1
+          periodSeconds: 15
+          successThreshold: 1
+          failureThreshold: 30
+        ports:
+          - containerPort: 8080
+          - containerPort: 8081
+          - containerPort: 8443
+          - containerPort: 9443
+          - containerPort: 9449
+          - containerPort: 1885
+          - containerPort: 9448
+        volumeMounts:
+          - name: portal-license-xml
+            mountPath: /opt/SecureSpan/Gateway/node/default/etc/bootstrap/license/license.xml
+            subPath: license.xml
+        resources:
+          requests:
+            cpu: 100m
+            memory: 4096Mi
+          limits:
+            cpu: 2000m
+            memory: 8192Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"
@@ -71,3 +79,10 @@ spec:
       dnsPolicy: "{{ .Values.apim.dnsPolicy }}"
       restartPolicy: Always
       terminationGracePeriodSeconds: 60
+      volumes:
+        - name: portal-license-xml
+          secret:
+            secretName: portal-license
+            items:
+              - key: license
+                path: license.xml

@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,7 +23,7 @@ spec:
       labels:
         name: analytics-server
     spec:
-      serviceAccountName:  portal-service-account
+      serviceAccountName: portal-service-account
       initContainers:
         - name: liquidbase-upgrade-portal
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
@@ -39,6 +38,8 @@ spec:
           envFrom:
           - configMapRef:
               name: analytics-server-config
+          - secretRef:
+              name: analytics-server-secret
           readinessProbe:
             exec:
               command: [sh, /opt/app/diagnostic/health_check.sh]
@@ -55,7 +56,6 @@ spec:
             successThreshold: 1
           ports:
             - containerPort: 9045
-
           resources:
             requests:
               cpu: 100m

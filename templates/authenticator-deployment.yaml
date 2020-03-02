@@ -35,6 +35,8 @@ spec:
           envFrom:
           - configMapRef:
               name: authenticator-config
+          - secretRef:
+              name: authenticator-secret
           readinessProbe:
             exec:
               command: ["sh", "/opt/app/diagnostic/health_check.sh"]
