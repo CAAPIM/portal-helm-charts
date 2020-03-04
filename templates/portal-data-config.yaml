@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: portal-data
+  name: portal-data-config
+data:
+  CONFIG_MAIL_SMTP_HOST: {{ required "Please fill in smtpHost in values.yaml" .Values.user.smtpHost }}
+  CONFIG_MAIL_SMTP_PORT: {{ required "Please fill in smtpPort in values.yaml" .Values.user.smtpPort | quote }}
+  CONFIG_MAIL_SMTP_REQUIRE_SSL: {{ required "Please fill in smtpRequireSSL in values.yaml" .Values.user.smtpRequireSSL | quote }}
+  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  DATABASE_NAME: {{ include "portal-db-name" . | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  FILE_REPOSITORY_DATABASE_NAME: {{ include "portal-db-name" . | quote }}
+  HELP_BASE_URL: {{ include "portal.help.page" . | quote }}
+  HOST_NAME_ID: MTAuMTc1LjI0Ny4yNDQgMTcyLjE4LjAuMSAxNzIuMTcuMC4xIAo=
+  JAVA_OPTIONS: -Xms2048m -Xmx2048m
+  NSS_SDB_USE_CACHE: "no"
+  PORTAL_SUBDOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain | quote }}
+  PORTAL_VERSION: {{ .Chart.AppVersion }}
+  RABBITMQ_ERLANG_COOKIE: {{ .Values.rabbitmq.config.cookie | quote }}
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
+  RBAC_DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  RBAC_DATABASE_NAME: {{ include "rbac-db-name" . | quote }}
+  RBAC_DATABASE_PORT: {{ include "database-port" . | quote }}
+  RBAC_DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  TSSG_TENANT_ID: {{ include "default-tenant-id" . | quote }}
+  {{- if .Values.user.hostnameWhitelist }}
+  HOSTNAME_WHITELIST: {{ .Values.user.hostnameWhitelist}}
+  {{- end }}
+  TELEMETRY_PLA_ENABLED: {{ .Values.user.telemetry.telemetry_pla_enabled | quote }}
+  TELEMETRY_USAGE_TYPE: {{ .Values.user.telemetry.telemetry_usage_type | quote }}
+  TELEMETRY_DOMAIN_NAME: {{ .Values.user.telemetry.telemetry_domain_name | quote }}
+  TELEMETRY_SITE_ID: {{ .Values.user.telemetry.telemetry_site_id | quote }}
+  TELEMETRY_CHARGEBACK_ID: {{ .Values.user.telemetry.telemetry_chargeback_id | quote }}
+  TELEMETRY_PROXY_URL: {{ .Values.user.telemetry.telemetry_proxy_url | quote }}

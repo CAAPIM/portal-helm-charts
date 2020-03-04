@@ -1,0 +1,80 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+spec:
+  selector:
+    matchLabels:
+      name: kafka
+  serviceName: kafka
+  replicas: {{ .Values.kafka.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        name: kafka
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - kafka
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 1010
+      containers:
+      - name: kafka
+        image: "{{ .Values.image.portalRepository }}{{ .Values.image.kafka }}"
+        imagePullPolicy: "{{ .Values.kafka.image.pullPolicy }}"
+        envFrom:
+        - configMapRef:
+            name: kafka-config
+        readinessProbe:
+            exec:
+              command: [sh, /opt/ca/health_check.sh]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+        livenessProbe:
+          exec:
+            command: [sh, /opt/ca/health_check.sh]
+          initialDelaySeconds: 120
+          timeoutSeconds: 1
+          periodSeconds: 15
+          successThreshold: 1
+        ports:
+        - containerPort: 9092
+        resources:
+          requests:
+            memory: 750Mi
+          limits:
+            memory: 1.5Gi
+        volumeMounts:
+        - name: kafka-vol-claim
+          mountPath: /opt/ca/kafka/kafka-logs
+          subPath: data/kafka/kafka-logs
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.kafka.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+  volumeClaimTemplates:
+    - metadata:
+        name: kafka-vol-claim
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "{{ .Values.persistence.storage.name }}"
+        resources:
+          requests:
+            storage: {{ .Values.persistence.storage.kafka }}
+{{- end -}}

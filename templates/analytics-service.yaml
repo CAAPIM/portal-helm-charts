@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: analytics-server
+    service: analytics-server
+  name: analytics-server
+spec:
+  ports:
+    - port: 9045
+      targetPort: 9045
+      name: analytics-server
+  selector:
+    name: analytics-server
+  type: ClusterIP
+  sessionAffinity: ClientIP

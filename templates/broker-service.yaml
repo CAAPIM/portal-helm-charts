@@ -1,0 +1,18 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: broker
+  labels:
+    name: broker
+    service: broker
+spec:
+  clusterIP: None
+  ports:
+  - name: "8082"
+    port: 8082
+    targetPort: 8082
+  selector:
+    name: broker
+  sessionAffinity: ClientIP
+{{- end -}}

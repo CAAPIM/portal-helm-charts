@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dispatcher-tls
+type: kubernetes.io/tls
+data:
+  tls.crt: {{ include "dispatcher-crt" . | b64enc }}
+  tls.key: {{ include "dispatcher-key" . | b64enc }}

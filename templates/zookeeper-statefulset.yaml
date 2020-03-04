@@ -1,0 +1,84 @@
+{{- if .Values.user.analyticsEnabled -}}
+{{ $nodeCount := .Values.zookeeper.replicaCount | int }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  labels:
+    name: zookeeper
+spec:
+  serviceName: zookeeper
+  replicas: {{ .Values.zookeeper.replicaCount }}
+  selector:
+    matchLabels:
+      name: zookeeper
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        name: zookeeper
+    spec:
+      terminationGracePeriodSeconds: 1800
+{{- if .Values.schedulerName }}
+      schedulerName: "{{ .Values.schedulerName }}"
+{{- end }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - zookeeper
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 1010
+      containers:
+        - name: zookeeper
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.zookeeper }}"
+          imagePullPolicy: "{{ .Values.zookeeper.image.pullPolicy }}"
+          ports:
+          - containerPort: 2181
+          - containerPort: 2888
+          - containerPort: 3888
+          env:
+            - name: ZOOKEEPER_SERVERS
+              value:
+            {{- range $i := until $nodeCount }}
+                server.{{ add $i 1 }}=zookeeper-{{ $i }}
+            {{- end }}
+            - name: ZOOKEEPER_PORT
+              value: "2181"
+          resources:
+            limits:
+              memory: 256Mi
+            requests:
+              memory: 256Mi
+          volumeMounts:
+            - name: zookeeper-vol-claim
+              mountPath: /opt/zookeeper/data
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.zookeeper.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: config
+          configMap:
+            name: zookeeper
+            defaultMode: 0555
+  volumeClaimTemplates:
+    - metadata:
+        name: zookeeper-vol-claim
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "{{ .Values.persistence.storage.name }}"
+        resources:
+          requests:
+            storage: {{ .Values.persistence.storage.zookeeper }}
+{{- end -}}

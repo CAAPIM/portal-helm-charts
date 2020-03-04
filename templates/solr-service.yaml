@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: solr
+  name: solr
+spec:
+  ports:
+    - port: 8983
+  selector:
+    name: solr
+  type: ClusterIP

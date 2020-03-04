@@ -1,0 +1,81 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  labels:
+    name: minio
+spec:
+  selector:
+    matchLabels:
+      name: minio
+  serviceName: minio
+  replicas: {{ .Values.minio.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1  
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        name: minio
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                    - minio
+              topologyKey: kubernetes.io/hostname
+      securityContext:
+        fsGroup: 1010
+      containers:
+        - name: minio
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.minio }}"
+          imagePullPolicy: "{{ .Values.minio.image.pullPolicy }}"
+          args:
+            - server
+            {{ if gt .Values.minio.replicaCount 1.0 }}
+            - http://minio-{0...{{sub .Values.minio.replicaCount 1}}}.minio.default.svc.cluster.local/opt/data 
+            {{ else }}
+            - /opt/data
+            {{ end }}
+          envFrom:
+          - configMapRef:
+              name: minio-config
+          - secretRef:
+              name: minio-secret
+          ports:
+            - containerPort: 9000
+          resources:
+            requests:
+              memory: 256Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+          - name: minio-vol-claim
+            mountPath: /opt/data
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.minio.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+  volumeClaimTemplates:
+  - metadata:
+      name: minio-vol-claim
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "{{ .Values.persistence.storage.name }}"
+      resources:
+        requests:
+            storage: {{ .Values.persistence.storage.minio }}      
+{{- end }}

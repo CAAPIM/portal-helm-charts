@@ -1,0 +1,12 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+data:
+  SERVICE_NAME: broker
+  ZOOKEEPER_HOST: zookeeper
+  ZOOKEEPER_PORT: "2181"
+kind: ConfigMap
+metadata:
+  labels:
+    name: broker
+  name: broker-config
+{{- end -}}

@@ -1,0 +1,69 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authenticator
+  labels:
+    name: authenticator
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  replicas: {{ .Values.authenticator.replicaCount }}
+  selector:
+    matchLabels:
+      name: authenticator
+  template:
+    metadata:
+      labels:
+        name: authenticator
+    spec:
+      serviceAccountName:  portal-service-account
+      initContainers:
+        - name: liquidbase-upgrade-portal
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'db-upgrade']
+        - name: liquidbase-upgrade-rbac
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'rbac-upgrade']
+      containers:
+        - name: authenticator
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.authenticator }}"
+          imagePullPolicy: "{{ .Values.authenticator.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: authenticator-config
+          - secretRef:
+              name: authenticator-secret
+          readinessProbe:
+            exec:
+              command: ["sh", "/opt/app/diagnostic/health_check.sh"]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["sh", "/opt/app/diagnostic/health_check.sh"]
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          ports:
+            - containerPort: 9081
+          resources:
+            requests:
+              cpu: 250m
+              memory: 250Mi
+            limits:
+              cpu: 750m
+              memory: 1500Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.authenticator.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

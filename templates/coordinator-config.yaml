@@ -1,0 +1,17 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: coordinator
+  name: coordinator-config
+data:
+  SERVICE_NAME: coordinator
+  ZOOKEEPER_HOST: zookeeper
+  ZOOKEEPER_PORT: "2181" 
+  MINIO_URL: http://minio:9000
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DRUID_DATABASE_NAME: {{ include "druid-db-name" . | quote }}
+{{- end -}}

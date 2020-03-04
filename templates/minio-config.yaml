@@ -1,0 +1,10 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+data:
+  SERVICE_NAME: minio
+kind: ConfigMap
+metadata:
+  labels:
+    name: minio
+  name: minio-config
+{{- end }}

@@ -1,0 +1,72 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: middlemanager
+  labels:
+    name: middlemanager
+spec:
+  selector:
+    matchLabels:
+      name: middlemanager
+  serviceName: middlemanager
+  replicas: {{ .Values.middlemanager.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1  
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        name: middlemanager
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - middlemanager
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: middlemanager
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.middlemanager }}"
+          imagePullPolicy: "{{ .Values.middlemanager.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: middlemanager-config
+          - secretRef:
+              name: middlemanager-secret
+          readinessProbe:
+            exec:
+              command: [sh, /opt/diagnostic/health_check.sh]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: [sh, /opt/diagnostic/health_check.sh]
+            initialDelaySeconds: 120
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          ports:
+            - containerPort: 8091
+          resources:
+            requests:
+              memory: 4Gi
+            limits:
+              memory: 4Gi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.middlemanager.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+{{- end -}}

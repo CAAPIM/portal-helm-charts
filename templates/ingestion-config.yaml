@@ -1,0 +1,23 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: ingestion-server
+  name: ingestion-server-config
+data:
+  SERVICE_NAME: ingestion-server
+  KAFKA_BROKERS: kafka:9092
+  BROKER_PORT: "8082"
+  OVERLORD_HOST: coordinator
+  OVERLORD_PORT: "8081"
+  COORDINATOR_HOST: coordinator
+  COORDINATOR_PORT: "8081"
+  MINIO_URL: http://minio:9000
+  PARTITION_COUNT: "{{ .Values.ingestion.config.partitionCount }}"
+  REPLICATION_COUNT: "{{ .Values.kafka.replicaCount }}"
+  DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+  DATABASE_NAME: {{ include "portal-db-name" . | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+{{- end -}}

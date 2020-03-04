@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-upgrade
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+        - name: db-upgrade
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.dbUpgrade }}"
+          env:
+           - name: HOST
+             value: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
+           - name: DATABASE_NAME
+             value: {{ include "portal-db-name" . | quote }}
+           - name: PASSWORD
+             value: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
+           - name: PORT
+             value: {{ include "database-port" . | quote }}
+           - name: LISTEN_PORT
+             value: "8080"
+           - name: USERNAME
+             value: {{ required "Please fill in databaseUsername in values.yaml" .Values.user.databaseUsername | quote }}
+           - name: DATABASE_TYPE
+             value: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+           - name: CREATE_DATABASE
+             value: "true"
+           - name: TSSG_TENANT_ID
+             value: {{ include "default-tenant-id" . | quote }}
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      restartPolicy: "OnFailure"

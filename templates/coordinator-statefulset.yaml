@@ -1,0 +1,72 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: coordinator
+  labels:
+    name: coordinator
+spec:
+  selector:
+    matchLabels:
+      name: coordinator
+  serviceName: coordinator
+  replicas: {{ .Values.coordinator.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1  
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        name: coordinator
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: name
+                    operator: In
+                    values:
+                      - coordinator
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: coordinator
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.coordinator }}"
+          imagePullPolicy: "{{ .Values.coordinator.image.pullPolicy }}"
+          envFrom:
+          - configMapRef:
+              name: coordinator-config
+          - secretRef:
+              name: coordinator-secret
+          readinessProbe:
+            exec:
+              command: [sh, /opt/diagnostic/health_check.sh]
+            initialDelaySeconds: 60
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: [sh, /opt/diagnostic/health_check.sh]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:     
+              memory: 512Mi
+            limits:
+              memory: 512Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.coordinator.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60
+{{- end -}}

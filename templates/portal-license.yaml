@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portal-license
+  labels:
+    name: portal-license
+  annotations:
+    description: Template for Secrets for the Gateway license
+type: Opaque
+data:
+  license: {{ include "portal-license" . | b64enc | quote }}

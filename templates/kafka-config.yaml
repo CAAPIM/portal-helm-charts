@@ -1,0 +1,16 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: kafka
+  name: kafka-config
+data:
+  SERVICE_NAME: kafka
+  KAFKA_PORT: "9092"
+  KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+  KAFKA_ADVERTISED_HOST_NAME: kafka
+  KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
+  KAFKA_LISTENERS: PLAINTEXT://:9092
+  BROKER_ID_COMMAND: echo $HOSTNAME | rev | cut -d "-" -f 1 
+{{- end -}}

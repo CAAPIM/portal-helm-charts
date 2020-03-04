@@ -1,0 +1,20 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: zookeeper
+  labels:
+    name: zookeeper
+    service: zookeeper
+spec:
+  clusterIP: None
+  ports:
+{{- range $key, $port := .Values.zookeeper.ports }}
+    - name: {{ $key }}
+      port: {{ $port.containerPort }}
+      targetPort: {{ $key }}
+      protocol: {{ $port.protocol }}
+{{- end }}
+  selector:
+    name: zookeeper
+{{- end -}}

@@ -1,0 +1,8 @@
+{{- if .Values.user.analyticsEnabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zookeeper
+  labels:
+    name: zookeeper
+{{- end -}}

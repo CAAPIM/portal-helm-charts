@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: analytics-server
+  name: analytics-server-config
+data:
+  BROKER_HOST: broker
+  BROKER_PORT: "8082"
+  ANALYTICS_ENABLED: {{ .Values.user.analyticsEnabled | quote }}
+  DATABASE_PORT: {{ include "database-port" . | quote }}
+  DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}
+  RABBITMQ_HOST: "{{ .Values.rabbitmq.name }}"
+  RABBITMQ_PORT: {{ .Values.rabbitmq.config.port | quote }}
+  NSS_SDB_USE_CACHE: "no"
+  ONPREM: "true"
+  PORTAL_VERSION: {{ .Chart.AppVersion }}
+  PAPI_PUBLIC_HOST: {{ include "tssg-public-host" . | quote }}
+  PAPI_INGRESS_TENANT: {{ include "default-tenant-id" . | quote }}

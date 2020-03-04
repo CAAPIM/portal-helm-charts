@@ -1,0 +1,14 @@
+{{- if .Values.user.deployDatabase -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    name: portaldb
+  name: portaldb-config
+type: Opaque
+data:
+  {{- if eq .Values.user.databaseType "postgresql" }}
+  NSS_SDB_USE_CACHE: "no"
+  POSTGRES_DATABASES: "{{ include "ldds-db-name" . }},{{ include "portal-db-name" . }},{{ include "tps-db-name" . }},{{ include "rbac-db-name" . }},{{ include "otk-db-name" . }},{{ include "druid-db-name" . }},integration_core,integration_runscope"
+  {{- end }}
+{{- end -}}
