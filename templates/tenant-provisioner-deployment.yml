@@ -1,0 +1,72 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant-provisioner
+  labels:
+    name: tenant-provisioner
+  annotations:
+    description: "The tenant provisioning micro service deployment configuration"
+spec:
+  replicas: {{ .Values.tenantProvisioner.replicaCount }}
+  selector:
+    matchLabels:
+      name: tenant-provisioner
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        name: tenant-provisioner
+    spec:
+      serviceAccountName:  portal-service-account
+      initContainers:
+        - name: liquidbase-upgrade-portal
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'db-upgrade']
+        - name: liquidbase-upgrade-rbac
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.upgradeVerify }}"
+          args: ["job", 'rbac-upgrade']
+      containers:
+        - name: tenant-provisioner-service
+          image: "{{ .Values.image.portalRepository }}{{ .Values.image.tps }}"
+          imagePullPolicy: "{{ .Values.tenantProvisioner.image.pullPolicy }}"
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+            - containerPort: 9001
+              protocol: TCP
+          envFrom:
+          - configMapRef:
+              name: tenant-provisioner-config
+          readinessProbe:
+            exec:
+              command: ["sh", "/opt/app/healthcheck.sh"]
+            initialDelaySeconds: 90
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          livenessProbe:
+            exec:
+              command: ["sh", "/opt/app/healthcheck.sh"]
+            initialDelaySeconds: 300
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 250Mi
+            limits:
+              cpu: 1000m
+              memory: 1536Mi
+      {{- if .Values.image.pullSecrets }}
+      imagePullSecrets:
+      - name: "{{ .Values.image.pullSecrets }}"
+      {{- end }}
+      dnsPolicy: "{{ .Values.tenantProvisioner.dnsPolicy }}"
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 60

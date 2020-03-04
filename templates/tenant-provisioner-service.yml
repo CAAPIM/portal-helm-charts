@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: tenant-provisioner
+    service: tenant-provisioner
+  name: tenant-provisioner
+  annotations:
+    description: "The internal service for the tenant provisioning micro service"
+spec:
+  ports:
+    - port: 9000
+      targetPort: 9000
+      name: http
+    - port: 9001
+      targetPort: 9001
+      name: health
+  selector:
+    name: tenant-provisioner
+  type: ClusterIP
+  sessionAffinity: ClientIP

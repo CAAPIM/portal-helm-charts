@@ -1,0 +1,17 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: authenticator
+    service: authenticator
+  name: authenticator
+spec:
+  ports:
+    - port: 9081
+      targetPort: 9081
+      name: auth-http
+  selector:
+    name: authenticator
+  type: ClusterIP
+  sessionAffinity: ClientIP

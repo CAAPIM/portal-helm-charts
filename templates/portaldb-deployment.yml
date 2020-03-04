@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 {{- if .Values.user.deployDatabase -}}
+=======
+{{- if .Values.user.setupDemoDatabase -}}
+>>>>>>> 381d5d1de5b81f9be48c04683b460d6707f4f5f1
 apiVersion: apps/v1
 kind: Deployment
 metadata:
