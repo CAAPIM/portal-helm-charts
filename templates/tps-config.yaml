@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   APIM_GATEWAY_HOSTNAME: {{ include "tssg-public-host" . | quote }}
-  APIM_GATEWAY_PORT: "9443"
+  APIM_GATEWAY_PORT: "443"
   APIM_GATEWAY_TENANTID:  {{ include "default-tenant-id" . | quote }}
   APIM_PORTAL_SUBDOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain }}
   BUSINESS_REPORTS_ENABLED: "false"
@@ -15,7 +15,7 @@ data:
   GATEWAY_USERNAME: admin
   JAVA_OPTS: -Xms512m -Xmx512m
   NSS_SDB_USE_CACHE: "no"
-  OTK_PORT: "9443"
+  OTK_PORT: "443"
   PAPI_USERNAME: {{ .Values.user.papiUsername | quote }}
   PORTAL_VERSION: {{ .Chart.AppVersion }}
   PORTAL_DATABASE_NAME: {{ include "portal-db-name" . | quote }}
