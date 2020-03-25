@@ -352,7 +352,7 @@ Get "analytics" database name
 Portal Docops page
 */}}
 {{- define "portal.help.page" -}}
-{{- printf "%s" "https://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/api-developer-portal/4-4.html" -}}
+{{- printf "%s" "https://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/api-developer-portal/4-5.html" -}}
 {{- end -}}
 
 {{/*
