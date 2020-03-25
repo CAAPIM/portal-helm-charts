@@ -10,7 +10,7 @@ spec:
   ports:
     - port: 9081
       targetPort: 9081
-      name: authenticator-http
+      name: auth-http
   selector:
     name: authenticator
   type: ClusterIP
