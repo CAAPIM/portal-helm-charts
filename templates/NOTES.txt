@@ -16,10 +16,6 @@ sso url: {{ include "pssg-sso-host" . }}
 analytics url: {{ include "analytics-host" . }}
 broker url: {{ include "broker-host" . }}
 
-{{- if .Values.user.externalTenant }}
-external tenant url: {{ include "external-tenant-host" . }}
-{{- end }}
-
 If this domain is not in your DNS records please add the a record in your
 hosts file to point this domain to any of your kubernetes worker nodes.
 
