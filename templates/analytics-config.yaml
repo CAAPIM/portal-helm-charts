@@ -6,6 +6,7 @@ data:
   ANALYTICS_ENABLED: {{ .Values.user.analyticsEnabled | quote }}
   DATABASE_HOST: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
   DATABASE_NAME: {{ include "portal-db-name" . | quote }}
+  ANALYTICS_DATABASE_NAME: {{ include "analytics-db-name" . | quote }}
   DATABASE_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
   DATABASE_PORT: {{ include "database-port" . | quote }}
   DATABASE_TYPE: {{ required "Please fill in databaseType in values.yaml" .Values.user.databaseType | quote }}

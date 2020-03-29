@@ -14,7 +14,7 @@ data:
   DSSG_SSL_KEY_PASS: {{ required "Please fill in dssgKeyPass in values.yaml" .Values.secrets.dssgKeyPass | quote }}
   NSS_SDB_USE_CACHE: "no"
   OTK_DATABASE_NAME: {{ include "otk-db-name" . | quote }}
-  OTK_PORT: "9443"
+  OTK_PORT: "443"
   PAPI_PASSWORD: {{ .Values.user.papiPassword | quote }}
   PAPI_USERNAME: {{ .Values.user.papiUsername | quote }}
   PORTAL_SUBDOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain | quote }}
@@ -36,7 +36,7 @@ data:
   SSG_USERNAME: admin
   TENANT_ID: {{ include "default-tenant-id" . | quote }}
   TSSG_PUBLIC_HOST: {{ include "tssg-public-host" . | quote }}
-  TSSG_PUBLIC_PORT: "9443"
+  TSSG_PUBLIC_PORT: "443"
 kind: ConfigMap
 metadata:
   labels:

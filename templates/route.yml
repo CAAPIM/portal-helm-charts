@@ -8,9 +8,6 @@ metadata:
     router: default
 spec:
   host: {{ include "default-tenant-host" . | quote }}
-  {{- if .Values.user.externalTenant }}
-  host: {{ include "external-tenant-host" . | quote }}
-  {{- end }}
   port:
     targetPort: portal-https
   tls:

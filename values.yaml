@@ -166,28 +166,28 @@ image:
   pullSecrets: bintray
   postgres: postgres:latest
   mysql: portaldb:latest
-  smtp: smtp:4.4
-  rabbitmq: message-broker:4.4
-  dispatcher: dispatcher:4.4
-  pssg: pssg:4.4
-  apim: ingress:4.4
-  enterprise: portal-enterprise:4.4
-  data: portal-data:4.4
-  tps: tenant-provisioning-service:4.4
-  solr: solr:4.4
-  analytics: analytics-server:4.4
-  authenticator: authenticator:4.4
-  dbUpgrade: db-upgrade-portal:4.4
-  rbacUpgrade: db-upgrade-rbac:4.4
-  ingestion: ingestion-server:4.4
-  kafka: kafka:4.4
-  zookeeper: zookeeper:4.4
-  broker: druid:4.4
-  coordinator: druid:4.4
-  middlemanager: druid:4.4
-  minio: minio:4.4
-  historical: druid:4.4
-  upgradeVerify: upgrade-verify:4.4
+  smtp: smtp:4.5
+  rabbitmq: message-broker:4.5
+  dispatcher: dispatcher:4.5
+  pssg: pssg:4.5
+  apim: ingress:4.5
+  enterprise: portal-enterprise:4.5
+  data: portal-data:4.5
+  tps: tenant-provisioning-service:4.5
+  solr: solr:4.5
+  analytics: analytics-server:4.5
+  authenticator: authenticator:4.5
+  dbUpgrade: db-upgrade-portal:4.5
+  rbacUpgrade: db-upgrade-rbac:4.5
+  ingestion: ingestion-server:4.5
+  kafka: kafka:4.5
+  zookeeper: zookeeper:4.5
+  broker: druid:4.5
+  coordinator: druid:4.5
+  middlemanager: druid:4.5
+  minio: minio:4.5
+  historical: druid:4.5
+  upgradeVerify: upgrade-verify:4.5
   
 user:
   kubeNamespace: dev-portal
@@ -195,8 +195,6 @@ user:
   legacyDatabaseNames: false
   domain: example.com
   # the subdomain you would like to use for your external tenant. By providing a value, an ingress rule will be created for accessing
-  # an external tenant
-  externalTenant:
   analyticsEnabled: true
   ssoDebug: false
   enrollNotificationEmail: noreply@mail.example.com
@@ -243,4 +241,4 @@ persistence:
     historical: 50Gi
     minio: 40Gi
     kafka: 10Gi
-    zookeeper: 2Gi
+    zookeeper: 10Gi

@@ -333,10 +333,26 @@ Get "druid" database name
 {{- end -}}
 
 {{/*
+Get "analytics" database name
+*/}}
+{{- define "analytics-db-name" -}}
+    {{ if .Values.user.legacyDatabaseNames }}
+        {{- print "analytics" }}
+    {{- else }}
+        {{- $f:= .Values.user.kubeNamespace -}}
+        {{ if empty $f }}
+            {{- fail "Please define kubeNamespace in values.yaml" }}
+        {{- else }}
+            {{- printf "%s_%s" $f "analytics" | replace "-" "_" -}}
+        {{- end }}
+    {{- end }}
+{{- end -}}
+
+{{/*
 Portal Docops page
 */}}
 {{- define "portal.help.page" -}}
-{{- printf "%s" "https://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/api-developer-portal/4-4.html" -}}
+{{- printf "%s" "https://techdocs.broadcom.com/content/broadcom/techdocs/us/en/ca-enterprise-software/layer7-api-management/api-developer-portal/4-5.html" -}}
 {{- end -}}
 
 {{/*
@@ -430,17 +446,6 @@ Generate default tenant endpoint based on configurations
         {{- printf "%s.%s" .Values.user.defaultTenantId .Values.user.domain -}}
     {{- else }}
         {{- printf "%s-%s.%s" .Values.user.defaultTenantId .Values.user.kubeNamespace .Values.user.domain -}}
-    {{- end }}
-{{- end -}}
-
-{{/*
-Generate external tenant endpoint based on configurations
-*/}}
-{{- define "external-tenant-host" -}}
-    {{- if .Values.user.legacyHostnames }}
-        {{- printf "%s.%s" .Values.user.externalTenant .Values.user.domain -}}
-    {{- else }}
-        {{- printf "%s-%s.%s" .Values.user.externalTenant .Values.user.kubeNamespace .Values.user.domain -}}
     {{- end }}
 {{- end -}}
 

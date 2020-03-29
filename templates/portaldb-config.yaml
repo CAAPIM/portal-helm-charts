@@ -4,7 +4,7 @@ kind: ConfigMap
 data:
   {{- if eq .Values.user.databaseType "postgresql" }}
   NSS_SDB_USE_CACHE: "no"
-  POSTGRES_DATABASES: "{{ include "ldds-db-name" . }},{{ include "portal-db-name" . }},{{ include "tps-db-name" . }},{{ include "rbac-db-name" . }},{{ include "otk-db-name" . }},{{ include "druid-db-name" . }},integration_core,integration_runscope"
+  POSTGRES_DATABASES: "{{ include "ldds-db-name" . }},{{ include "portal-db-name" . }},{{ include "tps-db-name" . }},{{ include "rbac-db-name" . }},{{ include "otk-db-name" . }},{{ include "druid-db-name" . }},integration_core,integration_runscope,{{ include "analytics-db-name" . }}"
   POSTGRES_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
   POSTGRES_REPLICATION_MODE: master
   POSTGRES_REPLICATION_PASSWORD: {{ required "Please fill in databasePassword in values.yaml" .Values.user.databasePassword | quote }}
