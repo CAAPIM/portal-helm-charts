@@ -38,6 +38,7 @@ spec:
           readinessProbe:
             exec:
               command: [sh, /opt/docker/diagnostic/health_check.sh]
+            failureThreshold: 20
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 10
@@ -45,6 +46,7 @@ spec:
           livenessProbe:
             exec:
               command: [sh, /opt/docker/diagnostic/health_check.sh]
+            failureThreshold: 20
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 10

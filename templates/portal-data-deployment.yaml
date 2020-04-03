@@ -42,6 +42,7 @@ spec:
             exec:
               command:
                 - livenesscheck
+            failureThreshold: 20
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 15
@@ -50,6 +51,7 @@ spec:
             exec:
               command:
                 - livenesscheck
+            failureThreshold: 20
             initialDelaySeconds: 120
             timeoutSeconds: 1
             periodSeconds: 15
