@@ -61,8 +61,8 @@ spec:
               cpu: 100m
               memory: 250Mi
             limits:
-              cpu: 1000m
-              memory: 1536Mi
+              cpu: 700m
+              memory: 1024Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       - name: "{{ .Values.image.pullSecrets }}"
