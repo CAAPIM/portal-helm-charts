@@ -60,11 +60,8 @@ spec:
             failureThreshold: 3
           resources:
       {{- end }}
-            requests:
-              cpu: 150m
-              memory: 250Mi
             limits:
-              cpu: 800m
+              cpu: 500m
               memory: 512Mi
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
