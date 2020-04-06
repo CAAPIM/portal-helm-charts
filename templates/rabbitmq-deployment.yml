@@ -29,9 +29,10 @@ spec:
           readinessProbe:
             exec:
               command: ["sh", "/opt/rabbit/health_check.sh"]
-            initialDelaySeconds: 60
+            failureThreshold: 5
+            initialDelaySeconds: 20
             timeoutSeconds: 1
-            periodSeconds: 15
+            periodSeconds: 10
             successThreshold: 1
           livenessProbe:
             exec:

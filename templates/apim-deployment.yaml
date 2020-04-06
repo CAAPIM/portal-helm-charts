@@ -38,8 +38,8 @@ spec:
             httpGet:
               path: /sys/probe/readinesscheck
               port: 8080
-            failureThreshold: 30
-            initialDelaySeconds: 300
+            failureThreshold: 34
+            initialDelaySeconds: 240
             timeoutSeconds: 1
             periodSeconds: 15
             successThreshold: 1
