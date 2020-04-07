@@ -177,8 +177,8 @@ image:
   solr: solr:4.5
   analytics: analytics-server:4.5
   authenticator: authenticator:4.5
-  dbUpgrade: db-upgrade-portal:4.5
-  rbacUpgrade: db-upgrade-rbac:4.5
+  dbUpgrade: db-upgrade-portal:jm665334-faster_mysql_retry
+  rbacUpgrade: db-upgrade-rbac:jm665334-faster_mysql_retry
   ingestion: ingestion-server:4.5
   kafka: kafka:4.5
   zookeeper: zookeeper:4.5
