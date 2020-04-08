@@ -9,7 +9,6 @@ spec:
       containers:
         - name: db-upgrade
           image: "{{ .Values.image.portalRepository }}{{ .Values.image.dbUpgrade }}"
-          imagePullPolicy: "Always"
           env:
            - name: HOST
              value: {{ required "Please fill in databaseHost in values.yaml" .Values.user.databaseHost | quote }}
