@@ -28,6 +28,9 @@ data:
   HOST_NAME_ID: MTAuMTc1LjI0Ny4yNDQgMTcyLjE4LjAuMSAxNzIuMTcuMC4xIAo=
   JAVA_OPTIONS: -Xms2048m -Xmx2048m
   NSS_SDB_USE_CACHE: "no"
+  PAPI_PASSWORD: {{ required "Please fill in papiPassword in values.yaml" .Values.user.papiPassword | quote }}
+  PAPI_PUBLIC_HOST: {{ include "tssg-public-host" . | quote }}
+  PAPI_USERNAME: {{ required "Please fill in papiUsername in values.yaml" .Values.user.papiUsername | quote }}
   PORTAL_SUBDOMAIN: {{ required "Please fill in domain in values.yaml" .Values.user.domain | quote }}
   PORTAL_VERSION: {{ .Chart.AppVersion }}
   RABBITMQ_DEFAULT_PASS: {{ .Values.rabbitmq.config.password | quote }}
