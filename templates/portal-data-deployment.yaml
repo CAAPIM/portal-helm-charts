@@ -42,17 +42,19 @@ spec:
             exec:
               command:
                 - livenesscheck
-            initialDelaySeconds: 360
+            failureThreshold: 6
+            initialDelaySeconds: 180
             timeoutSeconds: 1
-            periodSeconds: 15
+            periodSeconds: 10
             successThreshold: 1
           livenessProbe:
             exec:
               command:
                 - livenesscheck
-            initialDelaySeconds: 360
+            failureThreshold: 6
+            initialDelaySeconds: 180
             timeoutSeconds: 1
-            periodSeconds: 15
+            periodSeconds: 10
             successThreshold: 1
           ports:
             - containerPort: 8080
