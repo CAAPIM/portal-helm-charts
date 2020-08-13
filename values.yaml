@@ -132,6 +132,7 @@ middlemanager:
 ingestion:
   replicaCount: 1
   dnsPolicy: ClusterFirst
+  portName: ingestion-server
 
   image:
     pullPolicy: Always
