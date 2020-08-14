@@ -11,7 +11,7 @@ spec:
   ports:
     - port: 9042
       targetPort: 9042
-      name: ingestion-server
+      name: {{ .Values.ingestion.portName }}
   selector:
     name: ingestion-server
   type: ClusterIP
