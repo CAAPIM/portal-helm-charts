@@ -168,7 +168,7 @@ image:
   mysql: portaldb:latest
   smtp: smtp:4.5
   rabbitmq: message-broker:4.5
-  dispatcher: dispatcher:4.5
+  dispatcher: dispatcher:4.5.0.1
   pssg: pssg:4.5
   apim: ingress:4.5
   enterprise: portal-enterprise:4.5
