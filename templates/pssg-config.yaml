@@ -45,7 +45,6 @@ data:
   SSG_ADMIN_PASSWORD: M2NlY2RhZTMyZDZkNWMyZGI3
   SSG_ADMIN_USERNAME: admin
   SSG_JVM_HEAP: 4096m
-  SSG_LICENSE: {{ include "portal-license" . | b64enc | quote }}
   SSG_SSL_KEY: {{ include "pssg-ssl" . | b64enc | quote }}
   SSG_SSL_KEY_PASS: {{ required "Please fill in pssgSslKeyPass in values.yaml" .Values.secrets.pssgSslKeyPass | quote }}
 kind: ConfigMap

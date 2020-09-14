@@ -32,18 +32,6 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
-Get the license file required by the portal
-*/}}
-{{- define "portal-license" -}}
-{{- $f:= (.Files.Get "files/License.gz")  }}
-{{- if empty $f }}
-{{- fail "Please place the gziped SSG license in the files directory" }}
-{{- else }}
-{{- print $f }}
-{{- end }}
-{{- end -}}
-
-{{/*
 Get the jarvis cert file
 */}}
 {{- define "jarvis-crt" -}}
