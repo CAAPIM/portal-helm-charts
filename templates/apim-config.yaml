@@ -29,7 +29,6 @@ data:
   SSG_ADMIN_USERNAME: admin
   SSG_CLUSTER_HOST: {{ include "tssg-public-host" . | quote }}
   SSG_JVM_HEAP: 4096m
-  SSG_LICENSE: {{ include "portal-license" . | b64enc | quote }}
   SSG_PASSWORD: lh9M0SlIC8UHIBNwR/eQ5Z9V
   SSG_SSL_KEY: {{ include "apim-ssl" . | b64enc | quote }}
   SSG_SSL_KEY_PASS: {{ required "Please fill in apimSslKeyPass in values.yaml" .Values.secrets.apimSslKeyPass | quote }}
