@@ -161,9 +161,9 @@ historical:
     pullPolicy: Always
 
 image:
-  portalRepository: apim-portal.packages.ca.com/apim-portal/
+  portalRepository: docker.io/caapim/
   pullPolicy: Always
-  pullSecrets: bintray
+  pullSecrets: broadcom
   postgres: postgres:latest
   mysql: portaldb:latest
   smtp: smtp:4.4
